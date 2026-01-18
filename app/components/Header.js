@@ -27,11 +27,11 @@ export default function Header() {
             <Link href="/" className="text-gray-700 font-medium hover:text-blue-600 transition duration-300">
               Trang chủ
             </Link>
-            <Link href="/about" className="text-gray-700 font-medium hover:text-blue-600 transition duration-300">
-              Giới thiệu
-            </Link>
             <Link href="/products" className="text-gray-700 font-medium hover:text-blue-600 transition duration-300">
               Sản phẩm
+            </Link>
+            <Link href="/about" className="text-gray-700 font-medium hover:text-blue-600 transition duration-300">
+              Giới thiệu
             </Link>
             <Link href="/contact" className="text-gray-700 font-medium hover:text-blue-600 transition duration-300">
               Liên hệ

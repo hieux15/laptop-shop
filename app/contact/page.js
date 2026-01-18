@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react';
+import Image from 'next/image';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -33,16 +34,26 @@ export default function ContactPage() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <section className="relative bg-linear-to-br from-blue-600 to-indigo-700 text-white py-20 md:py-28">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 tracking-tight">
-              Liên hệ với chúng tôi
-            </h1>
-            <p className="text-lg md:text-xl text-blue-100 max-w-3xl mx-auto">
-              Chúng tôi luôn sẵn sàng hỗ trợ bạn
-            </p>
-          </div>
+      <section className="relative min-h-[50vh] flex items-center text-white overflow-hidden">
+        {/* Background Image with Overlay */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="https://images.unsplash.com/photo-1423666639041-f56000c27a9a?q=80&w=2074&auto=format&fit=crop"
+            alt="Contact Hero"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-linear-to-br from-blue-900/90 to-indigo-900/70" />
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center w-full">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 tracking-tight">
+            Liên hệ với chúng tôi
+          </h1>
+          <p className="text-lg md:text-xl text-blue-100 max-w-3xl mx-auto">
+            Chúng tôi luôn sẵn sàng hỗ trợ bạn
+          </p>
         </div>
       </section>
 

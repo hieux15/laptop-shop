@@ -55,8 +55,19 @@ export default function ProductsPage() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <section className="relative bg-linear-to-br from-blue-600 to-indigo-700 text-white py-20 md:py-28">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <section className="relative min-h-[50vh] flex items-center text-white overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="https://images.unsplash.com/photo-1496171367470-9ed9a91ea931?q=80&w=2070&auto=format&fit=crop"
+            alt="Products Hero"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-linear-to-br from-blue-900/90 to-indigo-900/70" />
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center w-full">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 tracking-tight">
             Sản phẩm của chúng tôi
           </h1>

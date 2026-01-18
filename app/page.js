@@ -34,38 +34,62 @@ export default function Home() {
 
   return (
     <div>
-      <section className="relative bg-linear-to-r from-blue-600 to-indigo-700 text-white overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 flex flex-col md:flex-row items-center justify-between gap-10">
-          <div className="max-w-xl">
-            <h1 className="text-4xl md:text-5xl font-bold leading-tight">
-              Laptop Chính Hãng – Giá Tốt Nhất
+      <section className="relative min-h-[80vh] flex items-center text-white overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=2071&auto=format&fit=crop"
+            alt="Hero Background"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-linear-to-r from-blue-900/90 to-indigo-900/60 mix-blend-multiply" />
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
+          <div className="max-w-2xl">
+            <div className="inline-block px-4 py-1.5 mb-6 bg-blue-500/20 backdrop-blur-md border border-blue-400/30 rounded-full text-blue-200 text-sm font-bold tracking-wider">
+              LapProVN - Công nghệ dẫn đầu
+            </div>
+            <h1 className="text-5xl md:text-7xl font-extrabold leading-tight mb-6">
+              Laptop Đẳng Cấp <br />
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-cyan-300">
+                Giá Trị Đích Thực
+              </span>
             </h1>
-            <p className="mt-6 text-xl opacity-90">
-              Khám phá hàng ngàn mẫu laptop từ MacBook, Dell, ASUS, Lenovo... với bảo hành chính hãng và ưu đãi độc quyền.
+            <p className="text-xl md:text-2xl opacity-90 mb-10 leading-relaxed text-gray-200">
+              Nâng tầm trải nghiệm làm việc và giải trí với những dòng laptop chính hãng mới nhất. Cam kết giá tốt nhất thị trường cùng chế độ bảo hành vàng.
             </p>
-            <div className="mt-10 flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-5">
               <Link
                 href="/products"
-                className="bg-white text-blue-700 px-8 py-4 rounded-xl font-bold hover:bg-gray-100 transition flex items-center justify-center gap-2 text-lg"
+                className="bg-blue-600 text-white px-10 py-5 rounded-2xl font-bold hover:bg-blue-700 transition-all hover:scale-105 shadow-xl shadow-blue-500/30 flex items-center justify-center gap-3 text-lg"
               >
-                Xem tất cả sản phẩm <ArrowRight className="h-5 w-5" />
+                Khám phá ngay <ArrowRight className="h-6 w-6" />
               </Link>
               <Link
                 href="/contact"
-                className="text-center border-2 border-white px-8 py-4 rounded-xl font-bold hover:bg-white hover:text-blue-700 transition text-lg"
+                className="bg-white/10 backdrop-blur-md border-2 border-white/30 text-white px-10 py-5 rounded-2xl font-bold hover:bg-white hover:text-blue-900 transition-all text-lg flex items-center justify-center"
               >
-                Liên hệ tư vấn
+                Nhận tư vấn miễn phí
               </Link>
             </div>
-          </div>
-          <div className=" hidden md:block relative w-full md:w-1/2 h-80 md:h-96">
-            <Image
-              src="/laptop2.jpg"
-              alt="Laptop Collection"
-              fill
-              className="object-contain drop-shadow-2xl"
-              priority
-            />
+            
+            <div className="mt-12 flex items-center gap-6">
+              <div className="flex -space-x-3">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="w-12 h-12 rounded-full border-2 border-blue-900 bg-gray-800 flex items-center justify-center overflow-hidden">
+                    <img src={`https://i.pravatar.cc/150?u=${i}`} alt="User" />
+                  </div>
+                ))}
+              </div>
+              <div className="text-sm">
+                <div className="flex text-yellow-400 mb-0.5">
+                  {[1, 2, 3, 4, 5].map((s) => <Star key={s} size={14} fill="currentColor" />)}
+                </div>
+                <p className="text-gray-300"><b>5000+</b> khách hàng đã tin tưởng</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>

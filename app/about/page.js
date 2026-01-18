@@ -1,16 +1,29 @@
 import { Laptop, Award, Users, Headphones, Target, Heart } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function AboutPage() {
   return (
     <div className="bg-white">
-      <section className="relative bg-linear-to-br from-blue-600 to-indigo-700 text-white py-20 md:py-28">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="relative min-h-[50vh] flex items-center text-white overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop"
+            alt="About Hero"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-linear-to-br from-blue-900/90 to-indigo-900/70" />
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center w-full">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 tracking-tight">
             Về Chúng Tôi
           </h1>
           <p className="text-lg md:text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
-            Đơn vị tiên phong mang đến laptop chính hãng, giá tốt nhất và dịch vụ tận tâm cho người dùng Việt Nam.
+            Đơn vị tiên phong mang đến laptop chính hãng, giá tốt nhất và dịch
+            vụ tận tâm cho người dùng Việt Nam.
           </p>
         </div>
       </section>
