@@ -45,8 +45,7 @@ export default function Footer() {
               Cửa hàng laptop chính hãng, giá tốt nhất thị trường. 
               Cam kết chất lượng và dịch vụ hậu mãi tận tâm.
             </p>
-            <h3 className="text-xl font-semibold text-white mt-6 mb-4">Kết nối với chúng tôi</h3>
-            <div className="flex space-x-4">
+            <div className="flex space-x-4 mt-6">
               {socialLinks.map((social) => {
                 const Icon = social.icon;
                 return (

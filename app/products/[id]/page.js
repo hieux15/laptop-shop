@@ -18,10 +18,12 @@ import {
 } from 'lucide-react';
 import { productsData } from '@/app/data/products';
 import { ProductCard } from '@/app/components/ProductCard';
+import { useCart } from '@/app/context/CartContext.js'; 
 
 export default function ProductDetailPage({ params: paramsPromise }) {
   const params = use(paramsPromise);
   const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useCart();
   
   const product = productsData.find(p => p.id === parseInt(params.id));
   
@@ -72,6 +74,7 @@ export default function ProductDetailPage({ params: paramsPromise }) {
                   fill
                   className="object-contain p-2 sm:p-4"
                   priority
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
               </div>
             </div>
@@ -185,7 +188,9 @@ export default function ProductDetailPage({ params: paramsPromise }) {
                       <Plus size={16} className="sm:w-4.5 sm:h-4.5" />
                     </button>
                   </div>
-                  <button className="flex-1 bg-white border-2 border-blue-600 text-blue-600 h-10 sm:h-12 rounded-lg sm:rounded-xl font-bold text-sm sm:text-base hover:bg-blue-50 transition flex items-center justify-center gap-1 sm:gap-2">
+                  <button
+                    onClick={() => addToCart(product)} 
+                    className="flex-1 bg-white border-2 border-blue-600 text-blue-600 h-10 sm:h-12 rounded-lg sm:rounded-xl font-bold text-sm sm:text-base hover:bg-blue-50 transition flex items-center justify-center gap-1 sm:gap-2">
                     <ShoppingCart size={18} className="sm:w-5 sm:h-5" />
                     <span className="xs:inline">Thêm vào giỏ</span>
                   </button>

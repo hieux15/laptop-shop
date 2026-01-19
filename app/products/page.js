@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Filter, X } from 'lucide-react';
-import productsData, { categories, brands, priceRanges } from '../data/products.js';
+import { Filter, X, Search } from 'lucide-react';
+import { productsData, categories, brands, priceRanges } from '../data/products.js';
 import { ProductCard } from '../components/ProductCard.js';
 
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedBrand, setSelectedBrand] = useState('all');
   const [selectedPriceRange, setSelectedPriceRange] = useState('all');
@@ -25,13 +26,18 @@ export default function ProductsPage() {
   }, [searchParams]);
 
   let filteredProducts = productsData.filter(product => {
+    const searchMatch = searchQuery === '' || 
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchQuery.toLowerCase());
+    
     const categoryMatch = selectedCategory === 'all' || product.category === selectedCategory;
     const brandMatch = selectedBrand === 'all' || product.brand === selectedBrand;
     
     const priceRange = priceRanges.find(r => r.id === selectedPriceRange);
     const priceMatch = product.price >= priceRange.min && product.price <= priceRange.max;
     
-    return categoryMatch && brandMatch && priceMatch;
+    return searchMatch && categoryMatch && brandMatch && priceMatch;
   });
 
   // Sort products
@@ -46,12 +52,13 @@ export default function ProductsPage() {
   }
 
   const resetFilters = () => {
+    setSearchQuery('');
     setSelectedCategory('all');
     setSelectedBrand('all');
     setSelectedPriceRange('all');
   };
 
-  const hasActiveFilters = selectedCategory !== 'all' || selectedBrand !== 'all' || selectedPriceRange !== 'all';
+  const hasActiveFilters = searchQuery !== '' || selectedCategory !== 'all' || selectedBrand !== 'all' || selectedPriceRange !== 'all';
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -63,6 +70,7 @@ export default function ProductsPage() {
             fill
             className="object-cover"
             priority
+            sizes="100vw"
           />
           <div className="absolute inset-0 bg-linear-to-br from-blue-900/90 to-indigo-900/70" />
         </div>
@@ -156,6 +164,19 @@ export default function ProductsPage() {
             </aside>
 
             <div className="flex-1">
+              <div className="mb-6">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Tìm kiếm laptop, hãng, thông số..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div>
                   <p className="text-gray-600">

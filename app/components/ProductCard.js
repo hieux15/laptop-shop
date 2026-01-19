@@ -15,6 +15,7 @@ export function ProductCard({ product }) {
           alt={product.name}
           fill
           className="object-cover group-hover:scale-105 transition duration-300"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
         {product.badge && (
           <span className="absolute top-3 left-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">

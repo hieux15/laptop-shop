@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import {Laptop, Shield, Truck, Headphones, ArrowRight, Star } from 'lucide-react';
-import productsData from './data/products.js';
+import { productsData } from './data/products.js';
 import { ProductCard } from './components/ProductCard.js';
 
 export default function Home() {
@@ -42,6 +42,7 @@ export default function Home() {
             fill
             className="object-cover"
             priority
+            sizes="100vw"
           />
           <div className="absolute inset-0 bg-linear-to-r from-blue-900/90 to-indigo-900/60 mix-blend-multiply" />
         </div>
@@ -79,7 +80,7 @@ export default function Home() {
               <div className="flex -space-x-3">
                 {[1, 2, 3, 4].map((i) => (
                   <div key={i} className="w-12 h-12 rounded-full border-2 border-blue-900 bg-gray-800 flex items-center justify-center overflow-hidden">
-                    <img src={`https://i.pravatar.cc/150?u=${i}`} alt="User" />
+                    <Image src={`https://i.pravatar.cc/150?u=${i}`} alt="User" width={48} height={48} />
                   </div>
                 ))}
               </div>
@@ -160,9 +161,11 @@ export default function Home() {
                 href={cat.href}
                 className="bg-gray-100 rounded-xl p-6 text-center hover:shadow-lg transition hover:scale-105"
               >
-                <img
+                <Image
                   src={cat.img}
                   alt={cat.name}
+                  width={96}
+                  height={96}
                   className="mx-auto mb-4 h-24 w-24 object-contain"
                 />
                 <h3 className="font-semibold text-lg">{cat.name}</h3>

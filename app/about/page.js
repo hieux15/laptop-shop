@@ -13,6 +13,7 @@ export default function AboutPage() {
             fill
             className="object-cover"
             priority
+            sizes="100vw"
           />
           <div className="absolute inset-0 bg-linear-to-br from-blue-900/90 to-indigo-900/70" />
         </div>
