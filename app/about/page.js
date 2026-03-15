@@ -23,8 +23,9 @@ export default function AboutPage() {
             Về Chúng Tôi
           </h1>
           <p className="text-lg md:text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
-            Đơn vị tiên phong mang đến laptop chính hãng, giá tốt nhất và dịch
-            vụ tận tâm cho người dùng Việt Nam.
+            Chúng tôi là một nhóm những người đam mê công nghệ, luôn muốn mang đến
+            cho bạn chiếc laptop phù hợp—chính hãng, giá hợp lý và dịch vụ thân
+            thiện như bạn bè.
           </p>
         </div>
       </section>
@@ -38,13 +39,20 @@ export default function AboutPage() {
               </h2>
               <div className="space-y-5 text-gray-700 text-base md:text-lg leading-relaxed">
                 <p>
-                  LapProVN được thành lập với sứ mệnh mang đến những chiếc laptop chất lượng cao, chính hãng với mức giá hợp lý nhất cho mọi người dùng tại Việt Nam.
+                  Từ những ngày đầu, LapProVN chỉ là một cửa hàng nhỏ với mục tiêu
+                  đơn giản: giúp mọi người tìm được chiếc laptop đúng ý mà không phải
+                  tốn thời gian lang thang khắp nơi.
                 </p>
                 <p>
-                  Với hơn 10 năm kinh nghiệm trong lĩnh vực công nghệ, chúng tôi tự hào là đối tác tin cậy của các thương hiệu hàng đầu thế giới: Dell, HP, Lenovo, ASUS, Acer, Apple...
+                  Sau hơn 10 năm gắn bó với công nghệ, chúng tôi đã đồng hành cùng hàng
+                  ngàn khách hàng và hợp tác với các thương hiệu như Dell, HP, Lenovo,
+                  ASUS, Acer hay Apple. Nhưng điều khiến chúng tôi tự hào nhất là sự
+                  tin tưởng của bạn.
                 </p>
                 <p>
-                  Đội ngũ chuyên viên luôn tận tâm, sẵn sàng tư vấn để bạn chọn được sản phẩm phù hợp nhất với nhu cầu và ngân sách.
+                  Nhóm tư vấn của chúng tôi luôn lắng nghe, chia sẻ và không bao giờ
+                  ép buộc. Chúng tôi ở đây để giúp bạn chọn đúng sản phẩm phù hợp với
+                  nhu cầu và túi tiền, như một người bạn đồng hành.
                 </p>
               </div>
             </div>
@@ -185,24 +193,36 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="py-16 md:py-20 bg-linear-to-br from-blue-600 to-indigo-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+      <section className="relative py-24 overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=2070&auto=format&fit=crop"
+            alt="About CTA Background"
+            fill
+            className="object-cover"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-slate-900/40" />
+          <div className="absolute inset-0 bg-linear-to-r from-blue-900/80 via-indigo-900/40 to-transparent" />
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6 tracking-tight">
             Sẵn sàng tìm laptop phù hợp?
           </h2>
-          <p className="text-lg md:text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
-            Khám phá ngay bộ sưu tập laptop đa dạng với ưu đãi đặc biệt dành riêng cho bạn.
+          <p className="text-lg md:text-xl text-blue-100 mb-10 max-w-3xl mx-auto leading-relaxed">
+            Khám phá ngay bộ sưu tập laptop đa dạng với ưu đãi đặc biệt dành riêng cho bạn. Đội ngũ chuyên gia của chúng tôi luôn sẵn sàng hỗ trợ.
           </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-center gap-5">
             <Link
               href="/products"
-              className="inline-flex items-center justify-center bg-white text-blue-700 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition shadow-lg"
+              className="inline-flex items-center justify-center bg-white text-blue-700 px-10 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-all hover:scale-105 shadow-xl"
             >
               Xem tất cả sản phẩm
             </Link>
             <Link
               href="/contact"
-              className="inline-flex items-center justify-center border-2 border-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-blue-700 transition shadow-lg"
+              className="inline-flex items-center justify-center border-2 border-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-blue-900 transition-all hover:scale-105 shadow-xl"
             >
               Liên hệ tư vấn miễn phí
             </Link>

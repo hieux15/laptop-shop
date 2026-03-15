@@ -35,7 +35,6 @@ export default function ContactPage() {
   return (
     <div className="bg-gray-50 min-h-screen">
       <section className="relative min-h-[50vh] flex items-center text-white overflow-hidden">
-        {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <Image
             src="https://images.unsplash.com/photo-1423666639041-f56000c27a9a?q=80&w=2074&auto=format&fit=crop"

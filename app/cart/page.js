@@ -1,99 +1,27 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { 
-  Trash2, 
-  Minus, 
-  Plus, 
-  ShoppingBag, 
-  ArrowLeft, 
-  ChevronRight,
-  ShieldCheck,
-  Truck,
-  CreditCard,
-  Home
-} from 'lucide-react';
-import { productsData } from '@/app/data/products';
-
+import { Trash2, Minus, Plus, ShoppingBag, ArrowLeft, ChevronRight, ShieldCheck, Truck, CreditCard, Home} from 'lucide-react';
+import { useCart } from '@/app/context/CartContext';
+import { CartSkeleton } from '@/app/components/Skeleton';
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const { cartItems, isLoaded, updateQuantity, removeFromCart, getSubtotal } = useCart();
 
-  // Load từ localStorage
-  useEffect(() => {
-    try {
-      const savedCart = localStorage.getItem('cart');
-      if (savedCart) {
-        setCartItems(JSON.parse(savedCart));
-      } else {
-        // Mặc định có 2 sản phẩm nếu giỏ trống
-        const initialItems = [
-          {
-            ...productsData[0],
-            quantity: 1,
-          },
-          {
-            ...productsData[1],
-            quantity: 1,
-          },
-        ];
-        setCartItems(initialItems);
-        localStorage.setItem('cart', JSON.stringify(initialItems));
-      }
-    } catch (error) {
-      console.error('Lỗi load giỏ hàng:', error);
-    }
-    setIsLoaded(true);
-  }, []);
-
-  // Lưu vào localStorage khi cartItems thay đổi
-  useEffect(() => {
-    if (isLoaded) {
-      try {
-        localStorage.setItem('cart', JSON.stringify(cartItems));
-      } catch (error) {
-        console.error('Lỗi lưu giỏ hàng:', error);
-      }
-    }
-  }, [cartItems, isLoaded]);
-
-  const updateQuantity = (id, delta) => {
-    setCartItems(prev => prev.map(item => {
-      if (item.id === id) {
-        const newQty = Math.max(1, item.quantity + delta);
-        return { ...item, quantity: newQty };
-      }
-      return item;
-    }));
-  };
-
-  const removeItem = (id) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
-  };
-
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = getSubtotal();
   const freeShipThreshold = 20000000;
   const shippingFee = 30000;
   const shipping = subtotal >= freeShipThreshold ? 0 : shippingFee;
   const total = subtotal + shipping;
 
   if (!isLoaded) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-500 font-medium">Đang tải giỏ hàng...</p>
-        </div>
-      </div>
-    );
+    return <CartSkeleton />;
   }
 
   return (
     <div className="bg-gray-50 min-h-screen pb-12 sm:pb-20">
-      {/* Breadcrumb */}
+      {/* breadcrumb */}
       <div className="bg-gray-50 mb-6 sm:mb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <div className="flex items-center text-xs sm:text-sm text-gray-500">
@@ -154,7 +82,7 @@ export default function CartPage() {
                           </Link>
                           <p className="text-xs text-gray-500 capitalize">{item.brand}</p>
                           
-                          {/* Mobile: Price and Quantity */}
+                          {/* đơn giá và số lượng */}
                           <div className="md:hidden flex items-center justify-between gap-4 mt-2 mb-2">
                             <span className="font-bold text-gray-900 text-sm">{item.price.toLocaleString('vi-VN')} ₫</span>
                             <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden h-8 bg-white">
@@ -168,10 +96,10 @@ export default function CartPage() {
                             </div>
                           </div>
 
-                          {/* Mobile: Bottom Actions */}
+                          {/* thao tác dưới cùng */}
                           <div className="md:hidden flex items-center justify-between mt-2">
                             <button 
-                              onClick={() => removeItem(item.id)}
+                              onClick={() => removeFromCart(item.id)}
                               className="p-2 -ml-2 text-gray-400 hover:text-red-500 transition"
                               title="Xóa sản phẩm"
                             >
@@ -183,13 +111,11 @@ export default function CartPage() {
                           </div>
                         </div>
                       </div>
-
-                      {/* Desktop: Price */}
+                      {/* đơn giá */}
                       <div className="hidden md:block col-span-2 text-center">
                         <span className="font-bold text-gray-900 text-sm">{item.price.toLocaleString('vi-VN')} ₫</span>
                       </div>
-
-                      {/* Desktop: Quantity */}
+                      {/* số lượng */}
                       <div className="hidden md:flex col-span-2 justify-center">
                         <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden h-9 bg-white">
                           <button onClick={() => updateQuantity(item.id, -1)} className="px-3 hover:bg-gray-100 transition border-r border-gray-200 h-full">
@@ -201,18 +127,16 @@ export default function CartPage() {
                           </button>
                         </div>
                       </div>
-
-                      {/* Desktop: Total */}
+                      {/* thành tiền */}
                       <div className="hidden md:block col-span-3 text-right">
                         <span className="font-bold text-blue-600 text-base sm:text-lg">
                           {(item.price * item.quantity).toLocaleString('vi-VN')} ₫
                         </span>
                       </div>
-
-                      {/* Desktop: Delete Button (Cột Thao tác mới) */}
+                      {/* thao tác xóa */}
                       <div className="hidden md:flex col-span-1 justify-center">
                         <button 
-                          onClick={() => removeItem(item.id)}
+                          onClick={() => removeFromCart(item.id)}
                           className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all duration-200"
                           title="Xóa khỏi giỏ hàng"
                         >
@@ -224,7 +148,7 @@ export default function CartPage() {
                   ))}
                 </div>
               </div>
-              {/* Service Policy */}
+              {/* chính sách vận chuyển và bảo hành */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3">
                   <Truck className="text-blue-600 shrink-0" size={20} />
@@ -249,8 +173,7 @@ export default function CartPage() {
                 </div>
               </div>
             </div>
-
-            {/* Order Summary */}
+            {/* tóm tắt đơn hàng */}
             <div className="lg:col-span-4">
               <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 lg:sticky lg:top-8">
                 <h3 className="font-bold text-lg sm:text-xl text-gray-900 mb-4 sm:mb-6 border-b border-gray-100 pb-3 sm:pb-4">Tóm tắt đơn hàng</h3>
@@ -284,7 +207,7 @@ export default function CartPage() {
 
                 <Link 
                   href="/checkout" 
-                  className="w-full inline-flex items-center justify-center bg-blue-600 text-white py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-lg hover:bg-blue-700 transition shadow-lg shadow-blue-200 mb-3 sm:mb-4 uppercase tracking-wide"
+                  className="w-full inline-flex items-center justify-center bg-blue-600 text-white py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-lg hover:bg-blue-700 transition mb-3 sm:mb-4 uppercase tracking-wide"
                 >
                   Tiến hành đặt hàng
                 </Link>

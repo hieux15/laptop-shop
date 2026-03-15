@@ -19,7 +19,7 @@ const socialLinks = [
 
 const privacyLinks = [
   { name: 'Chính sách thanh toán', href: '/privacy' },
-  { name: 'Điều khoản dịch vụ', href: '/terms' },
+  { name: 'Đơn hàng của bạn', href: '/orders' },
   { name: 'Chính sách bảo hành', href: '/warranty' },
   { name: 'Chính sách hoàn trả', href: '/refund' },
 ];
@@ -81,7 +81,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="text-xl font-semibold text-white mb-5">Chính sách</h3>
+            <h3 className="text-xl font-semibold text-white mb-5">Hỗ trợ</h3>
             <ul className="space-y-3">
               {privacyLinks.map((link) => (
                 <li key={link.name}>

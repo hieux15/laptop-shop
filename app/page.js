@@ -5,10 +5,10 @@ import { productsData } from './data/products.js';
 import { ProductCard } from './components/ProductCard.js';
 
 export default function Home() {
-  // Get featured products (with badge 'Bán chạy' or 'Mới')
+  // lấy sản phẩm nổi bật (với badge 'Bán chạy' hoặc 'Mới')
   const featuredProducts = productsData.filter(p => p.badge === 'Bán chạy' || p.badge === 'Mới').slice(0, 4);
   
-  // Categories data
+  // danh mục sản phẩm
   const categories = [
     {
       name: 'Laptop Gaming',
@@ -64,13 +64,17 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-5">
               <Link
                 href="/products"
-                className="bg-blue-600 text-white px-10 py-5 rounded-2xl font-bold hover:bg-blue-700 transition-all hover:scale-105 shadow-xl shadow-blue-500/30 flex items-center justify-center gap-3 text-lg"
+                className="group relative bg-blue-600 text-white px-10 py-5 rounded-2xl font-bold transition-all 
+                hover:scale-105 active:scale-95 shadow-2xl shadow-blue-500/40 flex items-center justify-center gap-3 text-lg overflow-hidden"
               >
-                Khám phá ngay <ArrowRight className="h-6 w-6" />
+                <div className="absolute inset-0 bg-linear-to-r from-blue-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <span className="relative">Khám phá ngay</span>
+                <ArrowRight className="h-6 w-6 relative group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
                 href="/contact"
-                className="bg-white/10 backdrop-blur-md border-2 border-white/30 text-white px-10 py-5 rounded-2xl font-bold hover:bg-white hover:text-blue-900 transition-all text-lg flex items-center justify-center"
+                className="bg-white/10 backdrop-blur-md border-2 border-white/30 text-white px-10 py-5 rounded-2xl font-bold hover:bg-white 
+                hover:text-blue-900 transition-all hover:scale-105 active:scale-95 text-lg flex items-center justify-center shadow-lg hover:shadow-white/20"
               >
                 Nhận tư vấn miễn phí
               </Link>
@@ -161,13 +165,15 @@ export default function Home() {
                 href={cat.href}
                 className="bg-gray-100 rounded-xl p-6 text-center hover:shadow-lg transition hover:scale-105"
               >
-                <Image
-                  src={cat.img}
-                  alt={cat.name}
-                  width={96}
-                  height={96}
-                  className="mx-auto mb-4 h-24 w-24 object-contain"
-                />
+                <div className="relative h-24 w-24 mx-auto mb-4">
+                  <Image
+                    src={cat.img}
+                    alt={cat.name}
+                    fill
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    className="object-contain"
+                  />
+                </div>
                 <h3 className="font-semibold text-lg">{cat.name}</h3>
               </Link>
             ))}
@@ -186,23 +192,39 @@ export default function Home() {
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
-          <div className="text-center mt-12">
-            <Link href="/products" className="text-blue-600 font-semibold hover:underline">
-              Xem thêm sản phẩm →
+          
+          <div className="text-center mt-16">
+            <Link 
+              href="/products" 
+              className="inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-2xl font-bold hover:bg-blue-700 transition-all hover:scale-105"
+            >
+              Xem tất cả sản phẩm <ArrowRight size={20} />
             </Link>
           </div>
         </div>
       </section>
 
-      <section className="py-20 bg-linear-to-r from-indigo-600 to-blue-600 text-white text-center">
-        <div className="max-w-4xl mx-auto px-4">
-          <h2 className="text-4xl font-bold mb-6">Sẵn sàng sở hữu laptop mơ ước?</h2>
-          <p className="text-xl mb-10 opacity-90">
-            Đặt hàng ngay hôm nay để nhận ưu đãi giảm đến 10% + quà tặng kèm.
+      <section className="relative py-24 overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=2070&auto=format&fit=crop"
+            alt="CTA Background"
+            fill
+            className="object-cover"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-linear-to-r from-blue-900/90 to-indigo-900/60 mix-blend-multiply" />
+        </div>
+        
+        <div className="relative z-10 max-w-4xl mx-auto px-4 text-center text-white">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">Sẵn sàng sở hữu laptop mơ ước?</h2>
+          <p className="text-xl mb-10 opacity-90 text-blue-100 max-w-2xl mx-auto leading-relaxed">
+            Đặt hàng ngay hôm nay để nhận ưu đãi giảm đến 10% cùng bộ quà tặng công nghệ trị giá 2.000.000đ.
           </p>
           <Link
             href="/products"
-            className="bg-white text-indigo-700 px-10 py-5 rounded-full font-bold text-xl hover:bg-gray-100 transition inline-flex items-center gap-3"
+            className="group relative bg-white text-indigo-700 px-10 py-5 rounded-full font-extrabold text-xl hover:bg-blue-50 
+            transition-all hover:scale-110 active:scale-95 inline-flex items-center gap-3 shadow-2xl hover:shadow-indigo-500/50 overflow-hidden"
           >
             Mua ngay <ArrowRight className="h-6 w-6" />
           </Link>

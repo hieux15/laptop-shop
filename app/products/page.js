@@ -1,15 +1,77 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Filter, X, Search } from 'lucide-react';
 import { productsData, categories, brands, priceRanges } from '../data/products.js';
 import { ProductCard } from '../components/ProductCard.js';
+import { ProductCardSkeleton } from '../components/Skeleton.js';
 
+function ProductsPageSkeleton() {
+  return (
+    <div className="bg-gray-50 min-h-screen">
+      <section className="relative min-h-[50vh] flex items-center text-white overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="https://images.unsplash.com/photo-1496171367470-9ed9a91ea931?q=80&w=2070&auto=format&fit=crop"
+            alt="Products Hero"
+            fill
+            className="object-cover"
+            priority
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-linear-to-br from-blue-900/90 to-indigo-900/70" />
+        </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center w-full">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 tracking-tight">
+            Sản phẩm của chúng tôi
+          </h1>
+          <p className="text-lg md:text-xl text-blue-100 max-w-3xl mx-auto">
+            Khám phá bộ sưu tập laptop đa dạng từ các thương hiệu hàng đầu
+          </p>
+        </div>
+      </section>
+      <section className="py-16 md:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row gap-8">
+            <aside className="hidden lg:block w-64 shrink-0">
+              <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-20 animate-pulse">
+                <div className="h-6 w-24 bg-gray-200 rounded mb-6" />
+                <div className="space-y-2 mb-6">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="h-10 bg-gray-200 rounded" />
+                  ))}
+                </div>
+                <div className="space-y-2 mb-6">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="h-10 bg-gray-200 rounded" />
+                  ))}
+                </div>
+                <div className="space-y-2">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-10 bg-gray-200 rounded" />
+                  ))}
+                </div>
+              </div>
+            </aside>
+            <div className="flex-1">
+              <div className="h-12 bg-gray-200 rounded-lg mb-6 animate-pulse" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <ProductCardSkeleton key={i} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
 
-export default function ProductsPage() {
+function ProductsPageContent() {
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -17,6 +79,14 @@ export default function ProductsPage() {
   const [selectedPriceRange, setSelectedPriceRange] = useState('all');
   const [sortBy, setSortBy] = useState('featured');
   const [showFilters, setShowFilters] = useState(false);
+  const [products, setProducts] = useState(productsData);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    // Load products from default data
+    setProducts(productsData);
+    setIsLoaded(true);
+  }, []);
 
   useEffect(() => {
     const categoryParam = searchParams.get('category');
@@ -25,30 +95,46 @@ export default function ProductsPage() {
     }
   }, [searchParams]);
 
-  let filteredProducts = productsData.filter(product => {
+  let filteredProducts = products.filter(product => {
     const searchMatch = searchQuery === '' || 
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchQuery.toLowerCase());
+      product.specs.cpu?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.specs.ram?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.specs.storage?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.specs.graphics?.toLowerCase().includes(searchQuery.toLowerCase());
     
     const categoryMatch = selectedCategory === 'all' || product.category === selectedCategory;
     const brandMatch = selectedBrand === 'all' || product.brand === selectedBrand;
     
     const priceRange = priceRanges.find(r => r.id === selectedPriceRange);
-    const priceMatch = product.price >= priceRange.min && product.price <= priceRange.max;
+    const priceMatch = !priceRange || 
+      (product.price >= priceRange.min && product.price <= priceRange.max);
     
     return searchMatch && categoryMatch && brandMatch && priceMatch;
   });
 
-  // Sort products
-  if (sortBy === 'price-asc') {
-    filteredProducts = [...filteredProducts].sort((a, b) => a.price - b.price);
-  } else if (sortBy === 'price-desc') {
-    filteredProducts = [...filteredProducts].sort((a, b) => b.price - a.price);
-  } else if (sortBy === 'rating') {
-    filteredProducts = [...filteredProducts].sort((a, b) => b.rating - a.rating);
-  } else if (sortBy === 'name') {
-    filteredProducts = [...filteredProducts].sort((a, b) => a.name.localeCompare(b.name));
+  const getSortComparator = () => {
+    if (sortBy === 'price-asc') return (a, b) => a.price - b.price;
+    if (sortBy === 'price-desc') return (a, b) => b.price - a.price;
+    if (sortBy === 'rating') return (a, b) => (b.rating ?? 0) - (a.rating ?? 0);
+    if (sortBy === 'name') return (a, b) => a.name.localeCompare(b.name);
+    return () => 0; 
+  };
+
+  // sắp xếp sản phẩm 
+  const query = searchQuery.toLowerCase().trim();
+  const comparator = getSortComparator();
+  if (query !== '') {
+    filteredProducts = [...filteredProducts].sort((a, b) => {
+      const aStarts = a.name.toLowerCase().startsWith(query);
+      const bStarts = b.name.toLowerCase().startsWith(query);
+      if (aStarts && !bStarts) return -1;
+      if (!aStarts && bStarts) return 1;
+      return comparator(a, b);
+    });
+  } else if (sortBy !== 'featured') {
+    filteredProducts = [...filteredProducts].sort(comparator);
   }
 
   const resetFilters = () => {
@@ -59,6 +145,10 @@ export default function ProductsPage() {
   };
 
   const hasActiveFilters = searchQuery !== '' || selectedCategory !== 'all' || selectedBrand !== 'all' || selectedPriceRange !== 'all';
+
+  if (!isLoaded) {
+    return <ProductsPageSkeleton />;
+  }
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -350,5 +440,13 @@ export default function ProductsPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<ProductsPageSkeleton />}>
+      <ProductsPageContent />
+    </Suspense>
   );
 }

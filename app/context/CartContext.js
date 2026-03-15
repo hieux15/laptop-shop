@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 const CartContext = createContext();
 
@@ -8,7 +9,6 @@ export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load cart from localStorage on mount
   useEffect(() => {
     try {
       const savedCart = localStorage.getItem('cart');
@@ -21,7 +21,6 @@ export function CartProvider({ children }) {
     setIsLoaded(true);
   }, []);
 
-  // Save cart to localStorage whenever it changes
   useEffect(() => {
     if (isLoaded) {
       try {
@@ -34,21 +33,32 @@ export function CartProvider({ children }) {
 
   // Add item to cart
   const addToCart = (product, quantity = 1) => {
+    // Compute toast message outside of the state updater to avoid
+    // causing component updates during render.
+    const existingItem = cartItems.find(item => item.id === product.id);
+
     setCartItems(prev => {
-      const existingItem = prev.find(item => item.id === product.id);
-      
-      if (existingItem) {
-        // Update quantity if item already exists
+      const found = prev.find(item => item.id === product.id);
+
+      if (found) {
+        const newQty = found.quantity + quantity;
         return prev.map(item =>
           item.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
+            ? { ...item, quantity: newQty }
             : item
         );
       } else {
-        // Add new item
         return [...prev, { ...product, quantity }];
       }
     });
+
+    // Call toast after scheduling the state update.
+    if (existingItem) {
+      const newQty = existingItem.quantity + quantity;
+      toast.success(`Đã cập nhật "${product.name}" (${newQty} sản phẩm) vào giỏ hàng`);
+    } else {
+      toast.success(`Đã thêm "${product.name}" vào giỏ hàng`);
+    }
   };
 
   // Update item quantity
