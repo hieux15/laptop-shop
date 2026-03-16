@@ -3,7 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {Laptop, Mail, Lock, Eye, EyeOff, ArrowLeft, User, Phone} from "lucide-react";
+import { Laptop, Mail, Lock, Eye, EyeOff, ArrowLeft, User, Phone } from "lucide-react";
+import toast from "react-hot-toast";
+import { registerUser } from "@/app/actions/register";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -82,11 +84,37 @@ export default function RegisterPage() {
     }
     
     setIsLoading(true);
-    // Giả lập xử lý đăng ký
-    setTimeout(() => {
+    try {
+      const result = await registerUser({
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+      });
+
+      if (result.success) {
+        toast.success(result.message);
+        setFormData({
+          fullName: "",
+          email: "",
+          phone: "",
+          password: "",
+          confirmPassword: "",
+          agreeToTerms: false,
+        });
+        setTimeout(() => {
+          router.push("/login");
+        }, 1000);
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      toast.error("Đã xảy ra lỗi. Vui lòng thử lại");
+    } finally {
       setIsLoading(false);
-      router.push("/login");
-    }, 1500);
+    }
   };
 
   return (

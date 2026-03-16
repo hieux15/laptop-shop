@@ -1,12 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import {Laptop, Mail, Lock, Eye, EyeOff, ArrowLeft} from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
+import toast from "react-hot-toast";
+import { Laptop, Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
+
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -14,6 +19,18 @@ export default function LoginPage() {
     rememberMe: false,
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    try {
+      const savedEmail = localStorage.getItem("rememberedEmail");
+      if (savedEmail) {
+        setFormData((prev) => ({ ...prev, email: savedEmail, rememberMe: true }));
+      }
+    } catch (e) {
+      console.warn("localStorage unavailable", e);
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -21,16 +38,46 @@ export default function LoginPage() {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+    setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
     setIsLoading(true);
-    // Giả lập xử lý đăng nhập
-    setTimeout(() => {
-      setIsLoading(false);
-      router.push("/");
-    }, 1500);
+
+    const result = await signIn("credentials", {
+      email: formData.email,
+      password: formData.password,
+      redirect: false,
+    });
+
+    setIsLoading(false);
+
+    if (result?.error) {
+      setError("Email hoặc mật khẩu không đúng.");
+      toast.error("Đăng nhập thất bại.");
+      return;
+    }
+
+    if (result?.ok) {
+      if (formData.rememberMe) {
+        localStorage.setItem("rememberedEmail", formData.email);
+      } else {
+        localStorage.removeItem("rememberedEmail");
+      }
+
+      toast.success("Đăng nhập thành công.");
+      const response = await fetch("/api/auth/session");
+      const session = await response.json();
+  
+      if (session?.user?.role === "ADMIN") {
+        router.push("/admin");
+      } else {
+        router.push(callbackUrl || "/");
+      }
+      router.refresh();
+    }
   };
 
   return (
@@ -118,7 +165,31 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="mt-10">
+            <div className="flex items-center justify-between mt-4">
+              <label className="flex items-center gap-2 text-sm text-gray-600">
+                <input
+                  type="checkbox"
+                  name="rememberMe"
+                  checked={formData.rememberMe}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, rememberMe: e.target.checked }))
+                  }
+                  className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+                />
+                Ghi nhớ đăng nhập
+              </label>
+              <Link href="/forgot-password" className="text-sm font-bold text-blue-600 hover:text-blue-500 transition">
+                Quên mật khẩu?
+              </Link>
+            </div>
+
+            {error && (
+              <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2">
+                {error}
+              </p>
+            )}
+
+            <div>
               <button
                 type="submit"
                 disabled={isLoading}
@@ -170,5 +241,24 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function LoginFormFallback() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md flex flex-col items-center gap-4">
+        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+        <p className="text-gray-600">Đang tải...</p>
+      </div>
+    </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoginFormFallback />}>
+      <LoginForm />
+    </Suspense>
   );
 }
