@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import {Laptop, Shield, Truck, Headphones, ArrowRight, Star } from 'lucide-react';
-import { productsData } from './data/products.js';
-import { ProductCard } from './components/ProductCard.js';
+import { productsData } from './data/products';
+import { ProductCard } from './components/ProductCard';
 
 export default function Home() {
   // lấy sản phẩm nổi bật (với badge 'Bán chạy' hoặc 'Mới')

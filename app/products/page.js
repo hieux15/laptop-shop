@@ -5,9 +5,9 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Filter, X, Search } from 'lucide-react';
-import { productsData, categories, brands, priceRanges } from '../data/products.js';
-import { ProductCard } from '../components/ProductCard.js';
-import { ProductCardSkeleton } from '../components/Skeleton.js';
+import { productsData, categories, brands, priceRanges } from '../data/products';
+import { ProductCard } from '../components/ProductCard';
+import { ProductCardSkeleton } from '../components/Skeleton';
 
 function ProductsPageSkeleton() {
   return (

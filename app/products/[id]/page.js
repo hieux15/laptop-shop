@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, use ,useEffect } from 'react';
+import { useState, use, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronRight, ShoppingCart, Heart, Share2, Shield, Truck, CreditCard, Check, Minus, Plus, House } from 'lucide-react';
 import { productsData } from '@/app/data/products';
 import { ProductCard } from '@/app/components/ProductCard';
 import { ProductDetailSkeleton } from '@/app/components/Skeleton';
-import { useCart } from '@/app/context/CartContext.js'; 
+import { useCart } from '@/app/context/CartContext'; 
 
 export default function ProductDetailPage({ params: paramsPromise }) {
   const params = use(paramsPromise);

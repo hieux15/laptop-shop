@@ -2,8 +2,9 @@ import "./globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { Inter } from "next/font/google";
-import { CartProvider } from './context/CartContext';
-import { Toaster } from 'react-hot-toast';
+import { CartProvider } from "./context/CartContext";
+import { Toaster } from "react-hot-toast";
+import SessionProvider from "./components/SessionProvider";
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -17,6 +18,7 @@ export default function RootLayout({ children }) {
     <html lang="vi" suppressHydrationWarning>
       <body className={`${inter.className} antialiased`}>
         <CartProvider>
+          <SessionProvider>
           <Toaster
             position="bottom-right"
             toastOptions={{
@@ -42,6 +44,7 @@ export default function RootLayout({ children }) {
             </main>
             <Footer />
           </div>
+          </SessionProvider>
         </CartProvider>
       </body>
     </html>
