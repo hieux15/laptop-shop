@@ -1,36 +1,99 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import {Laptop, Shield, Truck, Headphones, ArrowRight, Star } from 'lucide-react';
-import { productsData } from './data/products';
+import { Laptop, Shield, Truck, Headphones, ArrowRight, Star, Zap, CheckCircle, ChevronRight } from 'lucide-react';
+import { prisma } from '@/lib/prisma';
+import { serializeProduct } from '@/lib/productUtils';
 import { ProductCard } from './components/ProductCard';
 
-export default function Home() {
-  // lấy sản phẩm nổi bật (với badge 'Bán chạy' hoặc 'Mới')
-  const featuredProducts = productsData.filter(p => p.badge === 'Bán chạy' || p.badge === 'Mới').slice(0, 4);
-  
+export default async function Home() {
+  let featuredProducts = [];
+  try {
+    const raw = await prisma.product.findMany({
+  where: { isVisible: true },
+  include: { brand: true, category: true },
+});
+
+featuredProducts = raw
+  .map(serializeProduct)
+  .sort((a, b) => {
+    // Tiêu chí 1: Có giảm giá lên trước
+    const aHasDiscount = a.originalPrice > a.price ? 1 : 0;
+    const bHasDiscount = b.originalPrice > b.price ? 1 : 0;
+    if (bHasDiscount !== aHasDiscount) return bHasDiscount - aHasDiscount;
+
+    // Tiêu chí 2: % giảm giá cao hơn
+    const aDiscount = aHasDiscount ? (a.originalPrice - a.price) / a.originalPrice : 0;
+    const bDiscount = bHasDiscount ? (b.originalPrice - b.price) / b.originalPrice : 0;
+    if (bDiscount !== aDiscount) return bDiscount - aDiscount;
+
+    // Tiêu chí 3: Mới nhất
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  })
+  .slice(0, 4);
+  } catch (e) {
+    console.error('Failed to fetch featured products:', e);
+  }
   // danh mục sản phẩm
-  const categories = [
+const categories = [
     {
       name: 'Laptop Gaming',
-      href: '/products?category=gaming',
-      img: '/laptop-gaming.jpg'
+      href: '/products?category=laptop-gaming',
+      img: '/laptop-gaming.jpg',
+      desc: 'Hiệu năng cao, tản nhiệt mạnh',
+      accent: 'bg-red-50 border-red-100 group-hover:border-red-300',
+      iconBg: 'bg-red-100',
     },
     {
-      name: 'Laptop Văn phòng',
-      href: '/products?category=office',
-      img: '/laptop-office.jpg'
+      name: 'Laptop Văn Phòng',
+      href: '/products?category=laptop-van-phong',
+      img: '/laptop-office.jpg',
+      desc: 'Mỏng nhẹ, pin trâu, cơ động',
+      accent: 'bg-blue-50 border-blue-100 group-hover:border-blue-300',
+      iconBg: 'bg-blue-100',
     },
     {
-      name: 'MacBook',
-      href: '/products?category=macbook',
-      img: '/macbook.png'
+      name: 'Laptop Mỏng Nhẹ',
+      href: '/products?category=laptop-mong-nhe',
+      img: '/macbook.png',
+      desc: 'Thiết kế sang trọng, cao cấp',
+      accent: 'bg-slate-50 border-slate-200 group-hover:border-slate-400',
+      iconBg: 'bg-slate-100',
     },
     {
-      name: 'Laptop Đồ họa',
-      href: '/products?category=design',
-      img: '/laptop-design.jpg'
-    }
+      name: 'Laptop Đồ Họa',
+      href: '/products?category=laptop-do-hoa',
+      img: '/laptop-design.jpg',
+      desc: 'Màn hình chuẩn màu, GPU mạnh',
+      accent: 'bg-violet-50 border-violet-100 group-hover:border-violet-300',
+      iconBg: 'bg-violet-100',
+    },
   ];
+
+    const testimonials = [
+    {
+      name: 'Nguyễn Minh Tuấn',
+      role: 'Lập trình viên',
+      content: 'Mua MacBook Pro M3 tại đây, giá tốt hơn Apple Store chính thức mà vẫn chính hãng. Giao hàng nhanh chóng, đóng gói cẩn thận. Sẽ tiếp tục ủng hộ!',
+      rating: 5,
+      avatar: 'https://i.pravatar.cc/80?u=10',
+    },
+    {
+      name: 'Trần Thị Lan',
+      role: 'Kiến trúc sư',
+      content: 'Laptop gaming ASUS chạy cực mượt. Nhân viên tư vấn rất am hiểu, giúp tôi chọn đúng máy phù hợp với nhu cầu đồ họa 3D. Cực kỳ hài lòng!',
+      rating: 5,
+      avatar: 'https://i.pravatar.cc/80?u=20',
+    },
+    {
+      name: 'Lê Hoàng Phúc',
+      role: 'Sinh viên CNTT',
+      content: 'Được tư vấn nhiệt tình, chọn được chiếc Dell vừa túi tiền vừa đáp ứng nhu cầu học tập. Bảo hành tại chỗ rất tiện. Recommend cho mọi người!',
+      rating: 5,
+      avatar: 'https://i.pravatar.cc/80?u=30',
+    },
+  ];
+
+  const brands = ['Asus', 'Dell', 'HP', 'Lenovo', 'Apple', 'MSI', 'Acer', 'LG'];
 
   return (
     <div>
@@ -153,53 +216,110 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="pb-30 p-10 bg-white">
+      <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
-            Danh mục nổi bật
-          </h2>
+          <div className="flex items-end justify-between mb-12">
+            <div>
+              <p className="text-blue-600 font-semibold text-sm uppercase tracking-widest mb-3">Dòng sản phẩm</p>
+              <h2 className="text-4xl font-extrabold text-slate-900">Danh mục nổi bật</h2>
+            </div>
+            <Link href="/products" className="hidden sm:flex items-center gap-2 text-blue-600 font-semibold hover:gap-3 transition-all">
+              Xem tất cả <ChevronRight size={18} />
+            </Link>
+          </div>
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {categories.map((cat) => (
               <Link
                 key={cat.name}
                 href={cat.href}
-                className="bg-gray-100 rounded-xl p-6 text-center hover:shadow-lg transition hover:scale-105"
+                className={`group relative ${cat.accent} border-2 rounded-2xl p-6 text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1`}
               >
-                <div className="relative h-24 w-24 mx-auto mb-4">
+                <div className={`relative h-28 w-28 mx-auto mb-5 rounded-xl ${cat.iconBg} flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform duration-300`}>
                   <Image
                     src={cat.img}
                     alt={cat.name}
                     fill
                     sizes="(max-width: 768px) 50vw, 25vw"
-                    className="object-contain"
+                    className="object-contain p-2"
                   />
                 </div>
-                <h3 className="font-semibold text-lg">{cat.name}</h3>
+                <h3 className="font-bold text-lg text-slate-900 mb-1">{cat.name}</h3>
+                <p className="text-slate-500 text-xs">{cat.desc}</p>
+                <div className="mt-4 flex items-center justify-center gap-1 text-blue-600 text-xs font-semibold opacity-0 group-hover:opacity-100 transition-all translate-y-1 group-hover:translate-y-0">
+                  Xem ngay <ChevronRight size={13} />
+                </div>
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-gray-100">
+      <section className="py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
-            Sản phẩm nổi bật
-          </h2>
-          <p className="text-lg text-center mb-16">Khám phá những mẫu laptop bán chạy nhất với đánh giá cao từ khách hàng của chúng tôi. Đảm bảo hiệu năng vượt trội và thiết kế tinh tế cho mọi nhu cầu sử dụng.</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="flex items-end justify-between mb-6">
+            <div>
+              <p className="text-blue-600 font-semibold text-sm uppercase tracking-widest mb-3">Đang bán chạy</p>
+              <h2 className="text-4xl font-extrabold text-slate-900">Sản phẩm nổi bật</h2>
+            </div>
+            <Link href="/products" className="hidden sm:flex items-center gap-2 text-blue-600 font-semibold hover:gap-3 transition-all">
+              Xem tất cả <ChevronRight size={18} />
+            </Link>
+          </div>
+          <p className="text-slate-500 mb-12 max-w-2xl">
+            Những mẫu laptop được khách hàng yêu thích nhất – hiệu năng vượt trội, thiết kế tinh tế, phù hợp mọi nhu cầu sử dụng.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
-          
-          <div className="text-center mt-16">
-            <Link 
-              href="/products" 
-              className="inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-2xl font-bold hover:bg-blue-700 transition-all hover:scale-105"
-            >
-              Xem tất cả sản phẩm <ArrowRight size={20} />
-            </Link>
+        </div>
+      </section>
+      
+      <section className="py-16 bg-white border-y border-slate-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-center text-slate-400 text-sm font-semibold uppercase tracking-widest mb-10">
+            Thương hiệu phân phối chính hãng
+          </p>
+          <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-6">
+            {brands.map((brand) => (
+              <span key={brand} className="text-2xl font-extrabold text-slate-300 hover:text-slate-500 transition-colors cursor-default tracking-tight">
+                {brand}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── TESTIMONIALS ── */}
+      <section className="py-24 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <p className="text-blue-600 font-semibold text-sm uppercase tracking-widest mb-3">Khách hàng nói gì?</p>
+            <h2 className="text-4xl font-extrabold text-slate-900">Đánh giá thực tế</h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {testimonials.map((t, i) => (
+              <div key={i} className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:shadow-lg transition-shadow flex flex-col">
+                <div className="flex text-yellow-400 mb-5">
+                  {Array.from({ length: t.rating }).map((_, s) => (
+                    <Star key={s} size={15} fill="currentColor" />
+                  ))}
+                </div>
+                <p className="text-slate-600 leading-relaxed flex-1 mb-7 text-sm">"{t.content}"</p>
+                <div className="flex items-center gap-4">
+                  <Image src={t.avatar} alt={t.name} width={44} height={44} className="rounded-full" />
+                  <div>
+                    <p className="font-bold text-slate-900 text-sm">{t.name}</p>
+                    <p className="text-slate-400 text-xs">{t.role}</p>
+                  </div>
+                  <CheckCircle size={18} className="ml-auto text-emerald-500 shrink-0" />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>

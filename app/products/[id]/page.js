@@ -4,22 +4,39 @@ import { useState, use, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronRight, ShoppingCart, Heart, Share2, Shield, Truck, CreditCard, Check, Minus, Plus, House } from 'lucide-react';
-import { productsData } from '@/app/data/products';
 import { ProductCard } from '@/app/components/ProductCard';
 import { ProductDetailSkeleton } from '@/app/components/Skeleton';
 import { useCart } from '@/app/context/CartContext'; 
+import { useRouter } from 'next/navigation';
 
 export default function ProductDetailPage({ params: paramsPromise }) {
   const params = use(paramsPromise);
   const [quantity, setQuantity] = useState(1);
   const [product, setProduct] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const { addToCart } = useCart();
-  
+  const router = useRouter();
+
   useEffect(() => {
-    const foundProduct = productsData.find(p => p.id === parseInt(params.id));
-    setProduct(foundProduct);
-    setIsLoaded(true);
+    async function fetchProduct() {
+      try {
+        const res = await fetch(`/api/products/${params.id}`);
+        if (!res.ok) {
+          setProduct(null);
+          return;
+        }
+        const data = await res.json();
+        setProduct(data.product);
+        setRelatedProducts(data.relatedProducts || []);
+      } catch (e) {
+        console.error('Failed to fetch product:', e);
+        setProduct(null);
+      } finally {
+        setIsLoaded(true);
+      }
+    }
+    fetchProduct();
   }, [params.id]);
   
   if (!isLoaded) {
@@ -34,10 +51,6 @@ export default function ProductDetailPage({ params: paramsPromise }) {
       </div>
     );
   }
-
-  const relatedProducts = productsData
-    .filter(p => p.category === product.category && p.id !== product.id)
-    .slice(0, 4);
 
   const discount = product.originalPrice 
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
@@ -64,14 +77,13 @@ export default function ProductDetailPage({ params: paramsPromise }) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8">
           <div className="lg:col-span-7">
             <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-sm border border-gray-100">
-              <div className="relative aspect-square sm:aspect-4/3 rounded-lg sm:rounded-xl overflow-hidden bg-gray-50">
+              <div className="relative aspect-4/3 overflow-hidden bg-gray-50 flex items-center justify-center">
                 <Image
                   src={product.image}
                   alt={product.name}
                   fill
-                  className="object-contain p-2 sm:p-4"
+                  className="object-contain scale-100 p-2 sm:p-4"
                   priority
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 70vw, 50vw"
                 />
               </div>
             </div>
@@ -191,7 +203,10 @@ export default function ProductDetailPage({ params: paramsPromise }) {
                   </button>
                 </div>
                 <button 
-                  onClick={() => addToCart(product, quantity)}
+                  onClick={() => {
+                    addToCart(product, quantity);
+                    router.push('/cart');
+                  }}
                   className="w-full bg-blue-600 text-white h-12 sm:h-14 rounded-lg sm:rounded-xl font-bold text-base sm:text-lg hover:bg-blue-700 transition uppercase tracking-wide">
                   MUA NGAY
                 </button>

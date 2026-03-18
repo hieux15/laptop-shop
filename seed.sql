@@ -31,118 +31,22 @@ INSERT INTO brands (id, name, logo) VALUES
 -- ============================================================
 -- 3. PRODUCT (15 laptop thật)
 -- ============================================================
-INSERT INTO products (id, category_id, brand_id, name, price, description, specs, image, is_visible, created_at) VALUES
-
--- Apple (Mỏng nhẹ / Văn phòng)
-(1, 5, 1, 'Apple MacBook Air M2 13 inch 2024',
- 28990000,
- 'MacBook Air M2 với màn hình Liquid Retina 13.6 inch, chip Apple M2 mạnh mẽ, thời lượng pin lên đến 18 giờ. Thiết kế siêu mỏng nhẹ chỉ 1.24kg, không quạt tản nhiệt, hoạt động hoàn toàn im lặng.',
- '{"cpu":"Apple M2 8 nhân","ram":"8GB Unified Memory","storage":"256GB SSD","gpu":"GPU 8 nhân","screen":"13.6 inch Liquid Retina 2560x1664","battery":"18 giờ","weight":"1.24kg","os":"macOS Sonoma"}',
- 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/macbook-air-midnight-select-20220606',
- 1, NOW()),
-
-(2, 5, 1, 'Apple MacBook Air M3 15 inch 2024',
- 37990000,
- 'MacBook Air 15 inch với chip M3 thế hệ mới nhất, màn hình Liquid Retina 15.3 inch rộng rãi, pin 18 giờ. Lý tưởng cho người cần màn hình lớn nhưng vẫn muốn laptop mỏng nhẹ.',
- '{"cpu":"Apple M3 8 nhân","ram":"8GB Unified Memory","storage":"256GB SSD","gpu":"GPU 10 nhân","screen":"15.3 inch Liquid Retina 2880x1864","battery":"18 giờ","weight":"1.51kg","os":"macOS Sonoma"}',
- 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/macbook-air-15-midnight-select-202306',
- 1, NOW()),
-
-(3, 1, 1, 'Apple MacBook Pro M3 Pro 14 inch 2024',
- 54990000,
- 'MacBook Pro 14 inch với chip M3 Pro, màn hình Liquid Retina XDR 120Hz ProMotion. Hiệu năng chuyên nghiệp cho lập trình viên, nhà thiết kế và chỉnh sửa video 4K.',
- '{"cpu":"Apple M3 Pro 11 nhân","ram":"18GB Unified Memory","storage":"512GB SSD","gpu":"GPU 14 nhân","screen":"14.2 inch Liquid Retina XDR 3024x1964 120Hz","battery":"18 giờ","weight":"1.61kg","os":"macOS Sonoma"}',
- 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/mbp14-spacegray-select-202310',
- 1, NOW()),
-
--- Dell (Văn phòng / Mỏng nhẹ)
-(4, 1, 2, 'Dell XPS 13 Plus 9320 2024',
- 32990000,
- 'Dell XPS 13 Plus với thiết kế cao cấp, màn hình OLED 13.4 inch sắc nét, chip Intel Core i7 thế hệ 13. Bàn phím cảm ứng haptic độc đáo, vỏ nhôm nguyên khối sang trọng.',
- '{"cpu":"Intel Core i7-1360P","ram":"16GB LPDDR5","storage":"512GB SSD NVMe","gpu":"Intel Iris Xe Graphics","screen":"13.4 inch OLED 2880x1800 60Hz","battery":"12 giờ","weight":"1.27kg","os":"Windows 11 Home"}',
- 'https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/xps-notebooks/xps-13-9320/media-gallery/silver/notebook-xps-13-9320-silver-gallery-3.psd',
- 1, NOW()),
-
-(5, 4, 2, 'Dell Inspiron 15 3530 2024',
- 14990000,
- 'Dell Inspiron 15 là lựa chọn hoàn hảo cho sinh viên với mức giá hợp lý, hiệu năng ổn định cho học tập và làm việc văn phòng. Màn hình 15.6 inch Full HD, pin bền.',
- '{"cpu":"Intel Core i5-1335U","ram":"8GB DDR4","storage":"512GB SSD","gpu":"Intel Iris Xe Graphics","screen":"15.6 inch FHD 1920x1080 120Hz","battery":"8 giờ","weight":"1.65kg","os":"Windows 11 Home"}',
- 'https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/inspiron-notebooks/inspiron-15-3530/media-gallery/black/notebook-inspiron-15-3530-black-gallery-1.psd',
- 1, NOW()),
-
--- ASUS (Gaming / Sinh viên)
-(6, 2, 3, 'ASUS ROG Strix G16 2024 G614JV',
- 32990000,
- 'ASUS ROG Strix G16 là laptop gaming mạnh mẽ với chip Intel Core i7 thế hệ 13, RTX 4060, màn hình 165Hz. Hệ thống tản nhiệt ROG Intelligent Cooling giữ nhiệt độ ổn định khi chiến game.',
- '{"cpu":"Intel Core i7-13650HX","ram":"16GB DDR5","storage":"512GB SSD NVMe","gpu":"NVIDIA GeForce RTX 4060 8GB","screen":"16 inch FHD 1920x1080 165Hz","battery":"6 giờ","weight":"2.5kg","os":"Windows 11 Home"}',
- 'https://dlcdnwebimgs.asus.com/gain/5E5DB982-E5CB-4A28-B1E0-C6EC86970D6B/w1000/h732',
- 1, NOW()),
-
-(7, 2, 3, 'ASUS ROG Zephyrus G14 2024 GA403UV',
- 42990000,
- 'ROG Zephyrus G14 2024 với chip AMD Ryzen 9 8945HS và RTX 4060, màn hình OLED 2.8K 120Hz tuyệt đẹp. Laptop gaming mỏng nhẹ nhất phân khúc, chỉ 1.65kg nhưng hiệu năng cực mạnh.',
- '{"cpu":"AMD Ryzen 9 8945HS","ram":"16GB LPDDR5X","storage":"1TB SSD NVMe","gpu":"NVIDIA GeForce RTX 4060 8GB","screen":"14 inch OLED 2880x1800 120Hz","battery":"10 giờ","weight":"1.65kg","os":"Windows 11 Home"}',
- 'https://dlcdnwebimgs.asus.com/gain/1B53A0C8-CF0E-47D2-8389-3EBD7E1BE04F/w1000/h732',
- 1, NOW()),
-
-(8, 4, 3, 'ASUS VivoBook 15 X1504VA 2024',
- 12990000,
- 'ASUS VivoBook 15 là laptop sinh viên giá tốt, hiệu năng đủ dùng cho học tập, lập trình cơ bản và giải trí. Thiết kế nhỏ gọn, màu sắc trẻ trung, pin dùng cả ngày học.',
- '{"cpu":"Intel Core i5-1335U","ram":"8GB DDR4","storage":"512GB SSD","gpu":"Intel Iris Xe Graphics","screen":"15.6 inch FHD 1920x1080 60Hz","battery":"9 giờ","weight":"1.7kg","os":"Windows 11 Home"}',
- 'https://dlcdnwebimgs.asus.com/gain/C8FF5C9A-D5F3-4B51-9C51-41EF9B18E6EF/w1000/h732',
- 1, NOW()),
-
--- Lenovo (Văn phòng / Đồ họa)
-(9, 1, 4, 'Lenovo ThinkPad X1 Carbon Gen 12 2024',
- 38990000,
- 'ThinkPad X1 Carbon Gen 12 là biểu tượng laptop doanh nhân với độ bền chuẩn MIL-SPEC, bảo mật vân tay + IR camera, bàn phím ThinkPad huyền thoại. Siêu nhẹ chỉ 1.12kg.',
- '{"cpu":"Intel Core Ultra 7 165U","ram":"16GB LPDDR5","storage":"512GB SSD NVMe","gpu":"Intel Graphics","screen":"14 inch IPS 1920x1200 400nits","battery":"15 giờ","weight":"1.12kg","os":"Windows 11 Pro"}',
- 'https://p1-ofp.static.pub/medias/bWFzdGVyfHJvb3R8MjM4NTI3fGltYWdlL3BuZ3xoNTgvaGJlLzE0MDkxMDU4MDY1NTY2LnBuZ3w',
- 1, NOW()),
-
-(10, 3, 4, 'Lenovo ThinkPad P16 Gen 2 2024',
- 52990000,
- 'ThinkPad P16 là workstation di động mạnh mẽ dành cho kiến trúc sư, kỹ sư CAD/CAM, chỉnh sửa video chuyên nghiệp. Màn hình IPS 4K chuẩn màu, card đồ họa NVIDIA RTX A2000.',
- '{"cpu":"Intel Core i7-13700HX","ram":"32GB DDR5","storage":"1TB SSD NVMe","gpu":"NVIDIA RTX A2000 8GB","screen":"16 inch IPS 4K 3840x2400 165Hz","battery":"8 giờ","weight":"2.55kg","os":"Windows 11 Pro"}',
- 'https://p1-ofp.static.pub/medias/bWFzdGVyfHJvb3R8MTk2NjU5fGltYWdlL3BuZ3w',
- 1, NOW()),
-
-(11, 4, 4, 'Lenovo IdeaPad Slim 3 15IRH8 2024',
- 11990000,
- 'IdeaPad Slim 3 là laptop sinh viên giá rẻ nhưng đủ dùng, phù hợp học online, làm bài tập, xem phim. Pin 10 giờ cực bền, trọng lượng nhẹ dễ mang đi học.',
- '{"cpu":"Intel Core i5-12450H","ram":"8GB DDR4","storage":"512GB SSD","gpu":"Intel UHD Graphics","screen":"15.6 inch FHD 1920x1080 60Hz","battery":"10 giờ","weight":"1.62kg","os":"Windows 11 Home"}',
- 'https://p1-ofp.static.pub/medias/bWFzdGVyfHJvb3R8NjkwMTF8aW1hZ2UvcG5nfA',
- 1, NOW()),
-
--- HP (Văn phòng / Mỏng nhẹ)
-(12, 5, 5, 'HP Spectre x360 14 2024',
- 35990000,
- 'HP Spectre x360 14 là laptop 2-in-1 cao cấp nhất của HP, màn hình OLED cảm ứng 2.8K 120Hz, có thể gập 360 độ dùng như tablet. Thiết kế gem-cut độc đáo, bút HP Tilt Pen đi kèm.',
- '{"cpu":"Intel Core Ultra 7 155H","ram":"16GB LPDDR5","storage":"512GB SSD NVMe","gpu":"Intel Arc Graphics","screen":"14 inch OLED 2880x1800 120Hz cảm ứng","battery":"17 giờ","weight":"1.57kg","os":"Windows 11 Home"}',
- 'https://ssl-product-images.www8-hp.com/digmedialib/prodimg/knowledgebase/c08154282.png',
- 1, NOW()),
-
-(13, 1, 5, 'HP EliteBook 840 G10 2024',
- 28990000,
- 'HP EliteBook 840 G10 là laptop doanh nhân cao cấp với bảo mật HP Wolf Security, màn hình Sure View chống nhìn trộm, pin 12 giờ. Chuẩn độ bền MIL-SPEC 810H.',
- '{"cpu":"Intel Core i7-1355U","ram":"16GB DDR5","storage":"512GB SSD NVMe","gpu":"Intel Iris Xe Graphics","screen":"14 inch IPS 1920x1200 400nits","battery":"12 giờ","weight":"1.34kg","os":"Windows 11 Pro"}',
- 'https://ssl-product-images.www8-hp.com/digmedialib/prodimg/knowledgebase/c08250038.png',
- 1, NOW()),
-
--- MSI (Gaming / Đồ họa)
-(14, 2, 6, 'MSI Raider GE78 HX 2024',
- 55990000,
- 'MSI Raider GE78 HX là flagship gaming của MSI với chip Intel Core i9-14900HX, RTX 4080, màn hình QHD 240Hz. Hệ thống tản nhiệt Cooler Boost Trinity+ đỉnh cao, màn LED Matrix RGB ấn tượng.',
- '{"cpu":"Intel Core i9-14900HX","ram":"32GB DDR5","storage":"1TB SSD NVMe","gpu":"NVIDIA GeForce RTX 4080 12GB","screen":"17.3 inch QHD 2560x1440 240Hz","battery":"5 giờ","weight":"3.1kg","os":"Windows 11 Home"}',
- 'https://storage-asset.msi.com/global/picture/image/feature/nb/Raider/GE78HX13V/kv.png',
- 1, NOW()),
-
-(15, 3, 6, 'MSI Creator M16 HX 2024',
- 38990000,
- 'MSI Creator M16 HX là laptop dành riêng cho nhà sáng tạo nội dung với màn hình Mini LED QHD+ 165Hz Delta E<2, chip Intel Core i7-14700HX, RTX 4060. Màu sắc chính xác cho công việc đồ họa.',
- '{"cpu":"Intel Core i7-14700HX","ram":"16GB DDR5","storage":"1TB SSD NVMe","gpu":"NVIDIA GeForce RTX 4060 8GB","screen":"16 inch Mini LED QHD+ 2560x1600 165Hz","battery":"8 giờ","weight":"2.2kg","os":"Windows 11 Home"}',
- 'https://storage-asset.msi.com/global/picture/image/feature/nb/Creator/CreatorM16HX/kv.png',
- 1, NOW());
+INSERT INTO `products` (`id`, `category_id`, `brand_id`, `name`, `price`, `description`, `specs`, `image`, `is_visible`, `created_at`, `original_price`) VALUES
+(1, 5, 1, 'Apple MacBook Air M2 13 inch', 28990000, 'MacBook Air M2 với màn hình Liquid Retina 13.6 inch, chip Apple M2 mạnh mẽ, thời lượng pin lên đến 18 giờ. Thiết kế siêu mỏng nhẹ chỉ 1.24kg, không quạt tản nhiệt, hoạt động hoàn toàn im lặng.', '{\"cpu\":\"Apple M2 8 nhân\",\"ram\":\"8GB Unified Memory\",\"storage\":\"256GB SSD\",\"gpu\":\"GPU 8 nhân\",\"screen\":\"13.6 inch Liquid Retina 2560x1664\",\"battery\":\"18 giờ\",\"weight\":\"1.24kg\",\"os\":\"macOS Sonoma\"}', '/products/laptop-1.webp', 1, '2026-03-16 17:41:48.000', 32990000),
+(2, 5, 1, 'Apple MacBook Air M3 15 inch', 37990000, 'MacBook Air 15 inch với chip M3 thế hệ mới nhất, màn hình Liquid Retina 15.3 inch rộng rãi, pin 18 giờ. Lý tưởng cho người cần màn hình lớn nhưng vẫn muốn laptop mỏng nhẹ.', '{\"cpu\":\"Apple M3 8 nhân\",\"ram\":\"8GB Unified Memory\",\"storage\":\"256GB SSD\",\"gpu\":\"GPU 10 nhân\",\"screen\":\"15.3 inch Liquid Retina 2880x1864\",\"battery\":\"18 giờ\",\"weight\":\"1.51kg\",\"os\":\"macOS Sonoma\"}', '/products/laptop-2.webp', 1, '2026-03-16 17:41:48.000', 41990000),
+(3, 1, 1, 'Apple MacBook Pro M3 Pro 14 inch', 54990000, 'MacBook Pro 14 inch với chip M3 Pro, màn hình Liquid Retina XDR 120Hz ProMotion. Hiệu năng chuyên nghiệp cho lập trình viên, nhà thiết kế và chỉnh sửa video 4K.', '{\"cpu\":\"Apple M3 Pro 11 nhân\",\"ram\":\"18GB Unified Memory\",\"storage\":\"512GB SSD\",\"gpu\":\"GPU 14 nhân\",\"screen\":\"14.2 inch Liquid Retina XDR 3024x1964 120Hz\",\"battery\":\"18 giờ\",\"weight\":\"1.61kg\",\"os\":\"macOS Sonoma\"}', '/products/laptop-3.webp', 1, '2026-03-16 17:41:48.000', NULL),
+(4, 1, 2, 'Dell XPS 13 Plus 9320', 32990000, 'Dell XPS 13 Plus với thiết kế cao cấp, màn hình OLED 13.4 inch sắc nét, chip Intel Core i7 thế hệ 13. Bàn phím cảm ứng haptic độc đáo, vỏ nhôm nguyên khối sang trọng.', '{\"cpu\":\"Intel Core i7-1360P\",\"ram\":\"16GB LPDDR5\",\"storage\":\"512GB SSD NVMe\",\"gpu\":\"Intel Iris Xe Graphics\",\"screen\":\"13.4 inch OLED 2880x1800 60Hz\",\"battery\":\"12 giờ\",\"weight\":\"1.27kg\",\"os\":\"Windows 11 Home\"}', '/products/laptop-4.webp', 1, '2026-03-16 17:41:48.000', 36990000),
+(5, 4, 2, 'Dell Inspiron 15 3530', 14990000, 'Dell Inspiron 15 là lựa chọn hoàn hảo cho sinh viên với mức giá hợp lý, hiệu năng ổn định cho học tập và làm việc văn phòng. Màn hình 15.6 inch Full HD, pin bền.', '{\"cpu\":\"Intel Core i5-1335U\",\"ram\":\"8GB DDR4\",\"storage\":\"512GB SSD\",\"gpu\":\"Intel Iris Xe Graphics\",\"screen\":\"15.6 inch FHD 1920x1080 120Hz\",\"battery\":\"8 giờ\",\"weight\":\"1.65kg\",\"os\":\"Windows 11 Home\"}', '/products/laptop-5.webp', 1, '2026-03-16 17:41:48.000', 16990000),
+(6, 2, 3, 'ASUS ROG Strix G16 G614JV', 32990000, 'ASUS ROG Strix G16 là laptop gaming mạnh mẽ với chip Intel Core i7 thế hệ 13, RTX 4060, màn hình 165Hz. Hệ thống tản nhiệt ROG Intelligent Cooling giữ nhiệt độ ổn định khi chiến game.', '{\"cpu\":\"Intel Core i7-13650HX\",\"ram\":\"16GB DDR5\",\"storage\":\"512GB SSD NVMe\",\"gpu\":\"NVIDIA GeForce RTX 4060 8GB\",\"screen\":\"16 inch FHD 1920x1080 165Hz\",\"battery\":\"6 giờ\",\"weight\":\"2.5kg\",\"os\":\"Windows 11 Home\"}', '/products/laptop-6.webp', 1, '2026-03-16 17:41:48.000', 36990000),
+(7, 2, 3, 'ASUS ROG Zephyrus G14 GA403UV', 42990000, 'ROG Zephyrus G14 2026 với chip AMD Ryzen 9 8945HS và RTX 4060, màn hình OLED 2.8K 120Hz tuyệt đẹp. Laptop gaming mỏng nhẹ nhất phân khúc, chỉ 1.65kg nhưng hiệu năng cực mạnh.', '{\"cpu\":\"AMD Ryzen 9 8945HS\",\"ram\":\"16GB LPDDR5X\",\"storage\":\"1TB SSD NVMe\",\"gpu\":\"NVIDIA GeForce RTX 4060 8GB\",\"screen\":\"14 inch OLED 2880x1800 120Hz\",\"battery\":\"10 giờ\",\"weight\":\"1.65kg\",\"os\":\"Windows 11 Home\"}', '/products/laptop-7.webp', 1, '2026-03-16 17:41:48.000', NULL),
+(8, 4, 3, 'ASUS VivoBook 15 X1504VA', 12990000, 'ASUS VivoBook 15 là laptop sinh viên giá tốt, hiệu năng đủ dùng cho học tập, lập trình cơ bản và giải trí. Thiết kế nhỏ gọn, màu sắc trẻ trung, pin dùng cả ngày học.', '{\"cpu\":\"Intel Core i5-1335U\",\"ram\":\"8GB DDR4\",\"storage\":\"512GB SSD\",\"gpu\":\"Intel Iris Xe Graphics\",\"screen\":\"15.6 inch FHD 1920x1080 60Hz\",\"battery\":\"9 giờ\",\"weight\":\"1.7kg\",\"os\":\"Windows 11 Home\"}', '/products/laptop-8.webp', 1, '2026-03-16 17:41:48.000', 14990000),
+(9, 1, 4, 'Lenovo ThinkPad X1 Carbon Gen 12', 38990000, 'ThinkPad X1 Carbon Gen 12 là biểu tượng laptop doanh nhân với độ bền chuẩn MIL-SPEC, bảo mật vân tay + IR camera, bàn phím ThinkPad huyền thoại. Siêu nhẹ chỉ 1.12kg.', '{\"cpu\":\"Intel Core Ultra 7 165U\",\"ram\":\"16GB LPDDR5\",\"storage\":\"512GB SSD NVMe\",\"gpu\":\"Intel Graphics\",\"screen\":\"14 inch IPS 1920x1200 400nits\",\"battery\":\"15 giờ\",\"weight\":\"1.12kg\",\"os\":\"Windows 11 Pro\"}', '/products/laptop-9.webp', 1, '2026-03-16 17:41:48.000', NULL),
+(10, 3, 4, 'Lenovo ThinkPad P16 Gen 2', 52990000, 'ThinkPad P16 là workstation di động mạnh mẽ dành cho kiến trúc sư, kỹ sư CAD/CAM, chỉnh sửa video chuyên nghiệp. Màn hình IPS 4K chuẩn màu, card đồ họa NVIDIA RTX A2000.', '{\"cpu\":\"Intel Core i7-13700HX\",\"ram\":\"32GB DDR5\",\"storage\":\"1TB SSD NVMe\",\"gpu\":\"NVIDIA RTX A2000 8GB\",\"screen\":\"16 inch IPS 4K 3840x2400 165Hz\",\"battery\":\"8 giờ\",\"weight\":\"2.55kg\",\"os\":\"Windows 11 Pro\"}', '/products/laptop-10.webp', 1, '2026-03-16 17:41:48.000', NULL),
+(11, 4, 4, 'Lenovo IdeaPad Slim 3 15IRH8', 11990000, 'IdeaPad Slim 3 là laptop sinh viên giá rẻ nhưng đủ dùng, phù hợp học online, làm bài tập, xem phim. Pin 10 giờ cực bền, trọng lượng nhẹ dễ mang đi học.', '{\"cpu\":\"Intel Core i5-12450H\",\"ram\":\"8GB DDR4\",\"storage\":\"512GB SSD\",\"gpu\":\"Intel UHD Graphics\",\"screen\":\"15.6 inch FHD 1920x1080 60Hz\",\"battery\":\"10 giờ\",\"weight\":\"1.62kg\",\"os\":\"Windows 11 Home\"}', '/products/laptop-11.webp', 1, '2026-03-16 17:41:48.000', 13990000),
+(12, 5, 5, 'HP Spectre x360 14', 35990000, 'HP Spectre x360 14 là laptop 2-in-1 cao cấp nhất của HP, màn hình OLED cảm ứng 2.8K 120Hz, có thể gập 360 độ dùng như tablet. Thiết kế gem-cut độc đáo, bút HP Tilt Pen đi kèm.', '{\"cpu\":\"Intel Core Ultra 7 155H\",\"ram\":\"16GB LPDDR5\",\"storage\":\"512GB SSD NVMe\",\"gpu\":\"Intel Arc Graphics\",\"screen\":\"14 inch OLED 2880x1800 120Hz cảm ứng\",\"battery\":\"17 giờ\",\"weight\":\"1.57kg\",\"os\":\"Windows 11 Home\"}', '/products/laptop-12.webp', 1, '2026-03-16 17:41:48.000', 40990000),
+(13, 1, 5, 'HP EliteBook 840 G10', 28990000, 'HP EliteBook 840 G10 là laptop doanh nhân cao cấp với bảo mật HP Wolf Security, màn hình Sure View chống nhìn trộm, pin 12 giờ. Chuẩn độ bền MIL-SPEC 810H.', '{\"cpu\":\"Intel Core i7-1355U\",\"ram\":\"16GB DDR5\",\"storage\":\"512GB SSD NVMe\",\"gpu\":\"Intel Iris Xe Graphics\",\"screen\":\"14 inch IPS 1920x1200 400nits\",\"battery\":\"12 giờ\",\"weight\":\"1.34kg\",\"os\":\"Windows 11 Pro\"}', '/products/laptop-13.webp', 1, '2026-03-16 17:41:48.000', NULL),
+(14, 2, 6, 'MSI Raider GE78 HX', 55990000, 'MSI Raider GE78 HX là flagship gaming của MSI với chip Intel Core i9-14900HX, RTX 4080, màn hình QHD 240Hz. Hệ thống tản nhiệt Cooler Boost Trinity+ đỉnh cao, màn LED Matrix RGB ấn tượng.', '{\"cpu\":\"Intel Core i9-14900HX\",\"ram\":\"32GB DDR5\",\"storage\":\"1TB SSD NVMe\",\"gpu\":\"NVIDIA GeForce RTX 4080 12GB\",\"screen\":\"17.3 inch QHD 2560x1440 240Hz\",\"battery\":\"5 giờ\",\"weight\":\"3.1kg\",\"os\":\"Windows 11 Home\"}', '/products/laptop-14.webp', 1, '2026-03-16 17:41:48.000', NULL),
+(15, 3, 6, 'MSI Creator M16 HX', 38990000, 'MSI Creator M16 HX là laptop dành riêng cho nhà sáng tạo nội dung với màn hình Mini LED QHD+ 165Hz Delta E<2, chip Intel Core i7-14700HX, RTX 4060. Màu sắc chính xác cho công việc đồ họa.', '{\"cpu\":\"Intel Core i7-14700HX\",\"ram\":\"16GB DDR5\",\"storage\":\"1TB SSD NVMe\",\"gpu\":\"NVIDIA GeForce RTX 4060 8GB\",\"screen\":\"16 inch Mini LED QHD+ 2560x1600 165Hz\",\"battery\":\"8 giờ\",\"weight\":\"2.2kg\",\"os\":\"Windows 11 Home\"}', '/products/laptop-15.webp', 1, '2026-03-16 17:41:48.000', NULL);
 
 -- ============================================================
 -- 4. INVENTORY
@@ -159,26 +63,12 @@ INSERT INTO inventories (id, product_id, quantity, updated_at) VALUES
 -- Dùng để demo, đổi hash thật khi chạy thực tế
 -- bcrypt hash của "Admin@123" (sinh bởi bcryptjs):
 -- ============================================================
-INSERT INTO users (id, full_name, username, email, phone, password, role, is_active, created_at) VALUES
-(1, 'Quản Trị Viên', 'admin',
- 'admin@laptopshop.vn', '0901234567',
- '$2b$10$fDao7Tj2mUWksR9UipIfWegUvghuFiD3rWWgPva7Up4gOm5hFU72u',
- 'ADMIN', 1, NOW()),
-
-(2, 'Nguyễn Văn An', 'nguyenvanan',
- 'an.nguyen@gmail.com', '0912345678',
- '$2b$10$fDao7Tj2mUWksR9UipIfWegUvghuFiD3rWWgPva7Up4gOm5hFU72u',
- 'USER', 1, NOW()),
-
-(3, 'Trần Thị Bình', 'tranthibinh',
- 'binh.tran@gmail.com', '0923456789',
- '$2b$10$fDao7Tj2mUWksR9UipIfWegUvghuFiD3rWWgPva7Up4gOm5hFU72u',
- 'USER', 1, NOW()),
-
-(4, 'Lê Minh Tuấn', 'leminhtuan',
- 'tuan.le@gmail.com', '0934567890',
- '$2b$10$fDao7Tj2mUWksR9UipIfWegUvghuFiD3rWWgPva7Up4gOm5hFU72u',
- 'USER', 1, NOW());
+INSERT INTO `users` (`id`, `full_name`, `email`, `phone`, `password`, `role`, `is_active`, `created_at`, `reset_password_expires`, `reset_password_token`) VALUES
+(1, 'Quản Trị Viên', 'admin@laptopshop.vn', '0901234567', '$2b$10$fDao7Tj2mUWksR9UipIfWegUvghuFiD3rWWgPva7Up4gOm5hFU72u', 'ADMIN', 1, '2026-03-16 17:41:48.000', NULL, NULL),
+(2, 'Nguyễn Văn An', 'an.nguyen@gmail.com', '0912345678', '$2b$10$fDao7Tj2mUWksR9UipIfWegUvghuFiD3rWWgPva7Up4gOm5hFU72u', 'USER', 1, '2026-03-16 17:41:48.000', NULL, NULL),
+(3, 'Trần Thị Bình', 'binh.tran@gmail.com', '0923456789', '$2b$10$fDao7Tj2mUWksR9UipIfWegUvghuFiD3rWWgPva7Up4gOm5hFU72u', 'USER', 1, '2026-03-16 17:41:48.000', NULL, NULL),
+(4, 'Lê Minh Tuấn', 'tuan.le@gmail.com', '0934567890', '$2b$10$fDao7Tj2mUWksR9UipIfWegUvghuFiD3rWWgPva7Up4gOm5hFU72u', 'USER', 1, '2026-03-16 17:41:48.000', NULL, NULL),
+(5, 'Hieu Tran Pham', 'tomhank339@gmail.com', '0395858591', '$2b$10$eC7M5hDRCeoYrQdq6HV0Yex7o09/EhlbTYHO7W7TSuwuH0wqK/r/i', 'USER', 1, '2026-03-16 10:45:17.632', '2026-03-16 11:46:13.663', 'a204e80f3d888d233b13e67799b75dc57ee01eabc3769fab2466f0b68a99ee73');
 
 -- ============================================================
 -- 6. CART

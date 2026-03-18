@@ -28,30 +28,30 @@ export function ProductCard({ product }) {
     <div className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 group h-full flex flex-col">
       {/* Image Container */}
       <Link href={`/products/${product.id}`} className="block">
-        <div className="relative h-52 overflow-hidden bg-gray-100">
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
-          
-          {/* Badges */}
-          <div className="absolute top-3 left-3 right-3 flex gap-2">
-            {product.badge && (
-              <span className="bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-lg">
-                {product.badge}
-              </span>
-            )}
-            {discount > 0 && (
-              <span className="bg-amber-500 text-white text-xs font-bold px-2.5 py-1 rounded-lg">
-                -{discount}%
-              </span>
-            )}
-          </div>
-        </div>
-      </Link>
+  <div className="relative h-52 bg-white flex items-center justify-center">
+    <Image
+      src={product.image}
+      alt={product.name}
+      width={300}
+      height={200}
+      className="object-contain max-h-full max-w-full group-hover:scale-105 transition-transform duration-500"
+    />
+
+    {/* Badges */}
+    <div className="absolute top-3 left-3 right-3 flex gap-2">
+      {product.badge && (
+        <span className="bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-lg">
+          {product.badge}
+        </span>
+      )}
+      {discount > 0 && (
+        <span className="bg-amber-500 text-white text-xs font-bold px-2.5 py-1 rounded-lg">
+          -{discount}%
+        </span>
+      )}
+    </div>
+  </div>
+</Link>
 
       {/* Content */}
       <div className="p-4 flex flex-col grow">

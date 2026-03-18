@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Filter, X, Search } from 'lucide-react';
-import { productsData, categories, brands, priceRanges } from '../data/products';
+import { priceRanges } from '../data/products';
 import { ProductCard } from '../components/ProductCard';
 import { ProductCardSkeleton } from '../components/Skeleton';
 
@@ -79,13 +79,23 @@ function ProductsPageContent() {
   const [selectedPriceRange, setSelectedPriceRange] = useState('all');
   const [sortBy, setSortBy] = useState('featured');
   const [showFilters, setShowFilters] = useState(false);
-  const [products, setProducts] = useState(productsData);
+  const [products, setProducts] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Load products from default data
-    setProducts(productsData);
-    setIsLoaded(true);
+    async function fetchProducts() {
+      try {
+        const res = await fetch('/api/products');
+        const data = await res.json();
+        setProducts(Array.isArray(data) ? data : []);
+      } catch (e) {
+        console.error('Failed to fetch products:', e);
+        setProducts([]);
+      } finally {
+        setIsLoaded(true);
+      }
+    }
+    fetchProducts();
   }, []);
 
   useEffect(() => {
@@ -115,12 +125,31 @@ function ProductsPageContent() {
   });
 
   const getSortComparator = () => {
-    if (sortBy === 'price-asc') return (a, b) => a.price - b.price;
-    if (sortBy === 'price-desc') return (a, b) => b.price - a.price;
-    if (sortBy === 'rating') return (a, b) => (b.rating ?? 0) - (a.rating ?? 0);
-    if (sortBy === 'name') return (a, b) => a.name.localeCompare(b.name);
-    return () => 0; 
-  };
+  if (sortBy === 'price-asc') return (a, b) => a.price - b.price;
+  if (sortBy === 'price-desc') return (a, b) => b.price - a.price;
+  if (sortBy === 'rating') return (a, b) => (b.rating ?? 0) - (a.rating ?? 0);
+  if (sortBy === 'name') return (a, b) => a.name.localeCompare(b.name);
+
+  // "Nổi bật" — 3 tiêu chí giống trang Home
+  if (sortBy === 'featured') {
+    return (a, b) => {
+      // Tiêu chí 1: Có giảm giá lên trước
+      const aHasDiscount = a.originalPrice > a.price ? 1 : 0;
+      const bHasDiscount = b.originalPrice > b.price ? 1 : 0;
+      if (bHasDiscount !== aHasDiscount) return bHasDiscount - aHasDiscount;
+
+      // Tiêu chí 2: % giảm giá cao hơn
+      const aDiscount = aHasDiscount ? (a.originalPrice - a.price) / a.originalPrice : 0;
+      const bDiscount = bHasDiscount ? (b.originalPrice - b.price) / b.originalPrice : 0;
+      if (bDiscount !== aDiscount) return bDiscount - aDiscount;
+
+      // Tiêu chí 3: Mới nhất
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    };
+  }
+
+  return () => 0;
+};
 
   // sắp xếp sản phẩm 
   const query = searchQuery.toLowerCase().trim();
@@ -133,9 +162,25 @@ function ProductsPageContent() {
       if (!aStarts && bStarts) return 1;
       return comparator(a, b);
     });
-  } else if (sortBy !== 'featured') {
-    filteredProducts = [...filteredProducts].sort(comparator);
-  }
+  } else {
+  filteredProducts = [...filteredProducts].sort(comparator);
+}
+
+  const categories = useMemo(() => {
+    const map = {};
+    products.forEach(p => {
+      if (p.category && !map[p.category]) {
+        map[p.category] = { id: p.category, name: p.categoryName || p.category, count: 0 };
+      }
+      if (p.category) map[p.category].count++;
+    });
+    return [{ id: 'all', name: 'Tất cả', count: products.length }, ...Object.values(map)];
+  }, [products]);
+
+  const brands = useMemo(() => {
+    const names = [...new Set(products.map(p => p.brand).filter(Boolean))];
+    return [{ id: 'all', name: 'Tất cả thương hiệu' }, ...names.map(n => ({ id: n, name: n }))];
+  }, [products]);
 
   const resetFilters = () => {
     setSearchQuery('');
@@ -179,7 +224,7 @@ function ProductsPageContent() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row gap-8">
             <aside className="hidden lg:block w-64 shrink-0">
-              <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-20">
+             <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-bold text-gray-900">Bộ lọc</h3>
                   {hasActiveFilters && (
