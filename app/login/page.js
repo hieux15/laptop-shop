@@ -76,7 +76,6 @@ function LoginForm() {
       } else {
         router.push(callbackUrl || "/");
       }
-      router.refresh();
     }
   };
 

@@ -17,35 +17,35 @@ export default function RootLayout({ children }) {
   return (
     <html lang="vi" suppressHydrationWarning>
       <body className={`${inter.className} antialiased`}>
-        <CartProvider>
-          <SessionProvider>
-          <Toaster
-            position="bottom-right"
-            toastOptions={{
-              duration: 2500,
-              style: {
-                background: '#1e3a8a',
-                color: '#fff',
-                borderRadius: '12px',
-                padding: '14px 18px',
-              },
-              success: {
-                iconTheme: {
-                  primary: '#22c55e',
-                  secondary: '#fff',
+        <SessionProvider>
+          <CartProvider>
+            <Toaster
+              position="bottom-right"
+              toastOptions={{
+                duration: 2500,
+                style: {
+                  background: '#1e3a8a',
+                  color: '#fff',
+                  borderRadius: '12px',
+                  padding: '14px 18px',
                 },
-              },
-            }}
-          />
-          <div className="flex flex-col min-h-screen">
-            <Header />
-            <main className="grow">
-              {children}
-            </main>
-            <Footer />
-          </div>
-          </SessionProvider>
-        </CartProvider>
+                success: {
+                  iconTheme: {
+                    primary: '#22c55e',
+                    secondary: '#fff',
+                  },
+                },
+              }}
+            />
+            <div className="flex flex-col min-h-screen">
+              <Header />
+              <main className="grow">
+                {children}
+              </main>
+              <Footer />
+            </div>
+          </CartProvider>
+        </SessionProvider>
       </body>
     </html>
   );
