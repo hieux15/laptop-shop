@@ -6,7 +6,12 @@ export async function GET() {
   try {
     const products = await prisma.product.findMany({
       where: { isVisible: true },
-      include: { brand: true, category: true },
+      include: {
+        brand: true,
+        category: true,
+        reviews: { select: { rating: true } },
+        inventory: { select: { quantity: true } }
+      },
       orderBy: { createdAt: 'desc' },
     });
     return NextResponse.json(products.map(serializeProduct));
