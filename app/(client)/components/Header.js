@@ -85,17 +85,19 @@ export default function Header() {
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
-          <NavItem href="/cart">
-            <div className="relative inline-flex items-center">
-              <ShoppingCart className="inline w-5 h-5 mr-1" />
-              <span className="mr-1">Giỏ hàng</span>
-              {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartCount > 9 ? "9+" : cartCount}
-                </span>
-              )}
-            </div>
-          </NavItem>
+          {!isAdmin && (
+            <NavItem href="/cart">
+              <div className="relative inline-flex items-center">
+                <ShoppingCart className="inline w-5 h-5 mr-1" />
+                <span className="mr-1">Giỏ hàng</span>
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartCount > 9 ? "9+" : cartCount}
+                  </span>
+                )}
+              </div>
+            </NavItem>
+          )}
           {status === "authenticated" ? (
             <div className="relative">
               <button
@@ -181,16 +183,18 @@ export default function Header() {
               </NavItem>
             ))}
             <div className="border-t border-gray-200 my-2"></div>
-            <NavItem href="/cart" onClick={closeMenu}>
-              <div className="relative inline-flex items-center">
-                <span className="mr-1">Giỏ hàng</span>
-                {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                    {cartCount > 9 ? "9+" : cartCount}
-                  </span>
-                )}
-              </div>
-            </NavItem>
+            {!isAdmin && (
+              <NavItem href="/cart" onClick={closeMenu}>
+                <div className="relative inline-flex items-center">
+                  <span className="mr-1">Giỏ hàng</span>
+                  {cartCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {cartCount > 9 ? "9+" : cartCount}
+                    </span>
+                  )}
+                </div>
+              </NavItem>
+            )}
             {status === "authenticated" ? (
               <>
                 {!isAdmin && (

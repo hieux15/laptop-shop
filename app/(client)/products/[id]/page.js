@@ -9,6 +9,7 @@ import { ProductDetailSkeleton } from '@/app/(client)/components/Skeleton';
 import { useCart } from '@/app/context/CartContext'; 
 import { useRouter } from 'next/navigation';
 import ProductReviews from '@/app/(client)/components/ProductReviews';
+import { useSession } from 'next-auth/react';
 
 export default function ProductDetailPage({ params: paramsPromise }) {
   const params = use(paramsPromise);
@@ -18,6 +19,8 @@ export default function ProductDetailPage({ params: paramsPromise }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const { addToCart } = useCart();
   const router = useRouter();
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === "ADMIN";
 
   const SPECS_LABELS = {
   cpu:     'CPU',
@@ -191,40 +194,42 @@ export default function ProductDetailPage({ params: paramsPromise }) {
                 </div>
               </div>
 
-              {/* thêm vào giỏ hàng */}
-              <div className="space-y-3 sm:space-y-4">
-                <div className="flex items-center gap-2 sm:gap-4">
-                  <div className="flex items-center border border-gray-300 rounded-lg sm:rounded-xl overflow-hidden h-10 sm:h-12">
-                    <button 
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="px-3 sm:px-4 hover:bg-gray-100 transition h-full"
-                    >
-                      <Minus size={16} className="sm:w-4.5 sm:h-4.5" />
-                    </button>
-                    <span className="w-10 sm:w-12 text-center font-bold text-base sm:text-lg">{quantity}</span>
-                    <button 
-                      onClick={() => setQuantity(quantity + 1)}
-                      className="px-3 sm:px-4 hover:bg-gray-100 transition h-full"
-                    >
-                      <Plus size={16} className="sm:w-4.5 sm:h-4.5" />
+              {/* thêm vào giỏ hàng - ẩn cho admin */}
+              {!isAdmin && (
+                <div className="space-y-3 sm:space-y-4">
+                  <div className="flex items-center gap-2 sm:gap-4">
+                    <div className="flex items-center border border-gray-300 rounded-lg sm:rounded-xl overflow-hidden h-10 sm:h-12">
+                      <button 
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        className="px-3 sm:px-4 hover:bg-gray-100 transition h-full"
+                      >
+                        <Minus size={16} className="sm:w-4.5 sm:h-4.5" />
+                      </button>
+                      <span className="w-10 sm:w-12 text-center font-bold text-base sm:text-lg">{quantity}</span>
+                      <button 
+                        onClick={() => setQuantity(quantity + 1)}
+                        className="px-3 sm:px-4 hover:bg-gray-100 transition h-full"
+                      >
+                        <Plus size={16} className="sm:w-4.5 sm:h-4.5" />
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => addToCart(product, quantity)} 
+                      className="flex-1 bg-white border-2 border-blue-600 text-blue-600 h-10 sm:h-12 rounded-lg sm:rounded-xl font-bold text-sm sm:text-base hover:bg-blue-50 transition flex items-center justify-center gap-1 sm:gap-2">
+                      <ShoppingCart size={18} className="sm:w-5 sm:h-5" />
+                      <span className="xs:inline">Thêm vào giỏ</span>
                     </button>
                   </div>
-                  <button
-                    onClick={() => addToCart(product, quantity)} 
-                    className="flex-1 bg-white border-2 border-blue-600 text-blue-600 h-10 sm:h-12 rounded-lg sm:rounded-xl font-bold text-sm sm:text-base hover:bg-blue-50 transition flex items-center justify-center gap-1 sm:gap-2">
-                    <ShoppingCart size={18} className="sm:w-5 sm:h-5" />
-                    <span className="xs:inline">Thêm vào giỏ</span>
+                  <button 
+                    onClick={() => {
+                      addToCart(product, quantity);
+                      router.push('/cart');
+                    }}
+                    className="w-full bg-blue-600 text-white h-12 sm:h-14 rounded-lg sm:rounded-xl font-bold text-base sm:text-lg hover:bg-blue-700 transition uppercase tracking-wide">
+                    MUA NGAY
                   </button>
                 </div>
-                <button 
-                  onClick={() => {
-                    addToCart(product, quantity);
-                    router.push('/cart');
-                  }}
-                  className="w-full bg-blue-600 text-white h-12 sm:h-14 rounded-lg sm:rounded-xl font-bold text-base sm:text-lg hover:bg-blue-700 transition uppercase tracking-wide">
-                  MUA NGAY
-                </button>
-              </div>
+              )}
             </div>
           </div>
         </div>

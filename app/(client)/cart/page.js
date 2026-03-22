@@ -5,9 +5,12 @@ import Image from 'next/image';
 import { Trash2, Minus, Plus, ShoppingBag, ArrowLeft, ChevronRight, ShieldCheck, Truck, CreditCard, Home} from 'lucide-react';
 import { useCart } from '@/app/context/CartContext';
 import { CartSkeleton } from '@/app/(client)/components/Skeleton';
+import { useSession } from 'next-auth/react';
 
 export default function CartPage() {
   const { cartItems, isLoaded, updateQuantity, removeFromCart, getSubtotal } = useCart();
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === "ADMIN";
 
   const subtotal = getSubtotal();
   const freeShipThreshold = 20000000;
@@ -205,12 +208,14 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                <Link 
-                  href="/checkout" 
-                  className="w-full inline-flex items-center justify-center bg-blue-600 text-white py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-lg hover:bg-blue-700 transition mb-3 sm:mb-4 uppercase tracking-wide"
-                >
-                  Tiến hành đặt hàng
-                </Link>
+                {!isAdmin && (
+                  <Link 
+                    href="/checkout" 
+                    className="w-full inline-flex items-center justify-center bg-blue-600 text-white py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-lg hover:bg-blue-700 transition mb-3 sm:mb-4 uppercase tracking-wide"
+                  >
+                    Tiến hành đặt hàng
+                  </Link>
+                )}
                 
                 <Link 
                   href="/products" 
