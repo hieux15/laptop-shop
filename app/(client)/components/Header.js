@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Laptop, ShoppingCart, User, Menu, X, LogOut, LayoutDashboard } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useCart } from "../context/CartContext";
+import { useCart } from "../../context/CartContext";
 import { useSession, signOut } from "next-auth/react";
 
 const NAV_LINKS = [
@@ -114,13 +114,15 @@ export default function Header() {
                     onClick={() => setUserMenuOpen(false)}
                   />
                   <div className="absolute right-0 top-full mt-1 w-48 py-2 bg-white rounded-lg shadow-lg border border-gray-100 z-50">
-                    <Link
-                      href="/orders"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                    >
-                      Đơn hàng
-                    </Link>
+                    {!isAdmin && (
+                      <Link
+                        href="/orders"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                      >
+                        Đơn hàng
+                      </Link>
+                    )}
                     <Link
                       href="/profile"
                       onClick={() => setUserMenuOpen(false)}
@@ -181,7 +183,6 @@ export default function Header() {
             <div className="border-t border-gray-200 my-2"></div>
             <NavItem href="/cart" onClick={closeMenu}>
               <div className="relative inline-flex items-center">
-                <ShoppingCart className="inline w-5 h-5 mr-1" />
                 <span className="mr-1">Giỏ hàng</span>
                 {cartCount > 0 && (
                   <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
@@ -192,9 +193,11 @@ export default function Header() {
             </NavItem>
             {status === "authenticated" ? (
               <>
-                <Link href="/orders" onClick={closeMenu} className="text-gray-700 font-medium hover:text-blue-600">
-                  Đơn hàng
-                </Link>
+                {!isAdmin && (
+                  <Link href="/orders" onClick={closeMenu} className="text-gray-700 font-medium hover:text-blue-600">
+                    Đơn hàng
+                  </Link>
+                )}
                 <Link href="/profile" onClick={closeMenu} className="text-gray-700 font-medium hover:text-blue-600">
                   Tài khoản
                 </Link>

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Trash2, Minus, Plus, ShoppingBag, ArrowLeft, ChevronRight, ShieldCheck, Truck, CreditCard, Home} from 'lucide-react';
 import { useCart } from '@/app/context/CartContext';
-import { CartSkeleton } from '@/app/components/Skeleton';
+import { CartSkeleton } from '@/app/(client)/components/Skeleton';
 
 export default function CartPage() {
   const { cartItems, isLoaded, updateQuantity, removeFromCart, getSubtotal } = useCart();
