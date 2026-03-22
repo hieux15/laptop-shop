@@ -113,7 +113,7 @@ model CartItem {
 
 model Order {
   id            Int         @id @default(autoincrement())
-  userId        Int         @map("user_id")
+  userId        Int?        @map("user_id")
   receiverName  String      @map("receiver_name")
   receiverPhone String      @map("receiver_phone")
   street        String
@@ -125,7 +125,7 @@ model Order {
   note          String?
   createdAt     DateTime    @default(now()) @map("created_at")
 
-  user         User          @relation(fields: [userId], references: [id])
+  user         User?         @relation(fields: [userId], references: [id])
   orderDetails OrderDetail[]
 
   @@map("orders")
