@@ -1,5 +1,6 @@
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import ChatBot from "./components/ChatBot";
 import { CartProvider } from "../context/CartContext";
 
 export const metadata = {
@@ -16,6 +17,7 @@ export default function ClientLayout({ children }) {
           {children}
         </main>
         <Footer />
+        <ChatBot />
       </div>
     </CartProvider>
   );
