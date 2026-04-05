@@ -22,6 +22,14 @@ function LoginForm() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    const urlError = searchParams.get("error");
+    if (urlError === "blocked_account") {
+      setError("Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên để được hỗ trợ.");
+      toast.error("Tài khoản đã bị khóa.");
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
     try {
       const savedEmail = localStorage.getItem("rememberedEmail");
       if (savedEmail) {
@@ -53,10 +61,26 @@ function LoginForm() {
 
     setIsLoading(true);
 
+    // Check if account is blocked before attempting login
+    const checkRes = await fetch("/api/check-account", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: formData.email }),
+    });
+    const checkData = await checkRes.json();
+
+    if (checkData.blocked) {
+      setIsLoading(false);
+      setError("Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên để được hỗ trợ.");
+      toast.error("Tài khoản đã bị khóa.");
+      return;
+    }
+
     const result = await signIn("credentials", {
       email: formData.email,
       password: formData.password,
       redirect: false,
+      callbackUrl: "/",
     });
 
     setIsLoading(false);
@@ -74,13 +98,14 @@ function LoginForm() {
         localStorage.removeItem("rememberedEmail");
       }
 
-      toast.success("Đăng nhập thành công.");
       const response = await fetch("/api/auth/session");
       const session = await response.json();
   
       if (session?.user?.role === "ADMIN") {
+        toast.success("Chào mừng Quản trị viên! Đăng nhập thành công.");
         router.push("/admin");
       } else {
+        toast.success("Đăng nhập thành công.");
         router.push(callbackUrl || "/");
       }
     }
