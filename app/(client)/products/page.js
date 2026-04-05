@@ -80,22 +80,36 @@ function ProductsPageContent() {
   const [sortBy, setSortBy] = useState('featured');
   const [showFilters, setShowFilters] = useState(false);
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [brands, setBrands] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    async function fetchProducts() {
+    async function fetchData() {
       try {
-        const res = await fetch('/api/products');
-        const data = await res.json();
-        setProducts(Array.isArray(data) ? data : []);
+        const [productsRes, categoriesRes, brandsRes] = await Promise.all([
+          fetch('/api/products'),
+          fetch('/api/categories'),
+          fetch('/api/brands')
+        ]);
+        
+        const productsData = await productsRes.json();
+        const categoriesData = await categoriesRes.json();
+        const brandsData = await brandsRes.json();
+        
+        setProducts(Array.isArray(productsData) ? productsData : []);
+        setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+        setBrands(Array.isArray(brandsData) ? brandsData : []);
       } catch (e) {
-        console.error('Failed to fetch products:', e);
+        console.error('Failed to fetch data:', e);
         setProducts([]);
+        setCategories([]);
+        setBrands([]);
       } finally {
         setIsLoaded(true);
       }
     }
-    fetchProducts();
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -166,21 +180,16 @@ function ProductsPageContent() {
   filteredProducts = [...filteredProducts].sort(comparator);
 }
 
-  const categories = useMemo(() => {
-    const map = {};
-    products.forEach(p => {
-      if (p.category && !map[p.category]) {
-        map[p.category] = { id: p.category, name: p.categoryName || p.category, count: 0 };
-      }
-      if (p.category) map[p.category].count++;
-    });
-    return [{ id: 'all', name: 'Tất cả', count: products.length }, ...Object.values(map)];
-  }, [products]);
+  // Thêm "Tất cả" vào đầu danh sách categories và brands
+  const categoriesWithAll = [
+    { id: 'all', name: 'Tất cả', count: products.length },
+    ...categories.map(c => ({ ...c, count: products.filter(p => p.category === c.slug).length }))
+  ];
 
-  const brands = useMemo(() => {
-    const names = [...new Set(products.map(p => p.brand).filter(Boolean))];
-    return [{ id: 'all', name: 'Tất cả thương hiệu' }, ...names.map(n => ({ id: n, name: n }))];
-  }, [products]);
+  const brandsWithAll = [
+    { id: 'all', name: 'Tất cả thương hiệu' },
+    ...brands
+  ];
 
   const resetFilters = () => {
     setSearchQuery('');
@@ -240,12 +249,12 @@ function ProductsPageContent() {
                 <div className="mb-6">
                   <h4 className="font-semibold text-gray-900 mb-3">Danh mục</h4>
                   <div className="space-y-2">
-                    {categories.map(category => (
+                    {categoriesWithAll.map(category => (
                       <button
                         key={category.id}
-                        onClick={() => setSelectedCategory(category.id)}
+                        onClick={() => setSelectedCategory(category.id === 'all' ? 'all' : category.slug)}
                         className={`w-full text-left px-3 py-2 rounded-lg transition ${
-                          selectedCategory === category.id
+                          selectedCategory === (category.id === 'all' ? 'all' : category.slug)
                             ? 'bg-blue-50 text-blue-600 font-medium'
                             : 'text-gray-700 hover:bg-gray-50'
                         }`}
@@ -260,12 +269,12 @@ function ProductsPageContent() {
                 <div className="mb-6">
                   <h4 className="font-semibold text-gray-900 mb-3">Thương hiệu</h4>
                   <div className="space-y-2">
-                    {brands.map(brand => (
+                    {brandsWithAll.map(brand => (
                       <button
                         key={brand.id}
-                        onClick={() => setSelectedBrand(brand.id)}
+                        onClick={() => setSelectedBrand(brand.id === 'all' ? 'all' : brand.name)}
                         className={`w-full text-left px-3 py-2 rounded-lg transition ${
-                          selectedBrand === brand.id
+                          selectedBrand === (brand.id === 'all' ? 'all' : brand.name)
                             ? 'bg-blue-50 text-blue-600 font-medium'
                             : 'text-gray-700 hover:bg-gray-50'
                         }`}
@@ -387,14 +396,14 @@ function ProductsPageContent() {
               <div className="mb-6">
                 <h4 className="font-semibold text-gray-900 mb-3">Danh mục</h4>
                 <div className="space-y-2">
-                  {categories.map(category => (
+                  {categoriesWithAll.map(category => (
                     <button
                       key={category.id}
                       onClick={() => {
-                        setSelectedCategory(category.id);
+                        setSelectedCategory(category.id === 'all' ? 'all' : category.slug);
                       }}
                       className={`w-full text-left px-3 py-2 rounded-lg transition ${
-                        selectedCategory === category.id
+                        selectedCategory === (category.id === 'all' ? 'all' : category.slug)
                           ? 'bg-blue-50 text-blue-600 font-medium'
                           : 'text-gray-700 hover:bg-gray-50'
                       }`}
@@ -408,14 +417,14 @@ function ProductsPageContent() {
               <div className="mb-6">
                 <h4 className="font-semibold text-gray-900 mb-3">Thương hiệu</h4>
                 <div className="space-y-2">
-                  {brands.map(brand => (
+                  {brandsWithAll.map(brand => (
                     <button
                       key={brand.id}
                       onClick={() => {
-                        setSelectedBrand(brand.id);
+                        setSelectedBrand(brand.id === 'all' ? 'all' : brand.name);
                       }}
                       className={`w-full text-left px-3 py-2 rounded-lg transition ${
-                        selectedBrand === brand.id
+                        selectedBrand === (brand.id === 'all' ? 'all' : brand.name)
                           ? 'bg-blue-50 text-blue-600 font-medium'
                           : 'text-gray-700 hover:bg-gray-50'
                       }`}
