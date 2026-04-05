@@ -116,43 +116,64 @@ export default function Header() {
                     onClick={() => setUserMenuOpen(false)}
                   />
                   <div className="absolute right-0 top-full mt-1 w-48 py-2 bg-white rounded-lg shadow-lg border border-gray-100 z-50">
-                    {!isAdmin && (
-                      <Link
-                        href="/orders"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                      >
-                        Đơn hàng
-                      </Link>
+                    {isAdmin ? (
+                      <>
+                        <Link
+                          href="/admin/profile"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                        >
+                          Cài đặt tài khoản
+                        </Link>
+                        <Link
+                          href="/admin"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                        >
+                          <LayoutDashboard className="w-4 h-4" />
+                          Trang quản trị
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setUserMenuOpen(false);
+                            signOut({ callbackUrl: "/" });
+                          }}
+                          className="flex items-center gap-2 w-full px-4 py-2 text-sm text-left text-red-600 hover:bg-red-50"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Đăng xuất
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <Link
+                          href="/orders"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                        >
+                          Đơn hàng
+                        </Link>
+                        <Link
+                          href="/profile"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                        >
+                          Tài khoản
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setUserMenuOpen(false);
+                            signOut({ callbackUrl: "/" });
+                          }}
+                          className="flex items-center gap-2 w-full px-4 py-2 text-sm text-left text-red-600 hover:bg-red-50"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Đăng xuất
+                        </button>
+                      </>
                     )}
-                    <Link
-                      href="/profile"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                    >
-                      Tài khoản
-                    </Link>
-                    {isAdmin && (
-                      <Link
-                        href="/admin"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                      >
-                        <LayoutDashboard className="w-4 h-4" />
-                        Trang quản trị
-                      </Link>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setUserMenuOpen(false);
-                        signOut({ callbackUrl: "/" });
-                      }}
-                      className="flex items-center gap-2 w-full px-4 py-2 text-sm text-left text-red-600 hover:bg-red-50"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Đăng xuất
-                    </button>
                   </div>
                 </>
               )}
@@ -197,18 +218,24 @@ export default function Header() {
             )}
             {status === "authenticated" ? (
               <>
-                {!isAdmin && (
-                  <Link href="/orders" onClick={closeMenu} className="text-gray-700 font-medium hover:text-blue-600">
-                    Đơn hàng
-                  </Link>
-                )}
-                <Link href="/profile" onClick={closeMenu} className="text-gray-700 font-medium hover:text-blue-600">
-                  Tài khoản
-                </Link>
-                {isAdmin && (
-                  <Link href="/admin" onClick={closeMenu} className="text-gray-700 font-medium hover:text-blue-600">
-                    Trang quản trị
-                  </Link>
+                {isAdmin ? (
+                  <>
+                    <Link href="/admin/profile" onClick={closeMenu} className="text-gray-700 font-medium hover:text-blue-600">
+                      Cài đặt tài khoản
+                    </Link>
+                    <Link href="/admin" onClick={closeMenu} className="text-gray-700 font-medium hover:text-blue-600">
+                      Trang quản trị
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/orders" onClick={closeMenu} className="text-gray-700 font-medium hover:text-blue-600">
+                      Đơn hàng
+                    </Link>
+                    <Link href="/profile" onClick={closeMenu} className="text-gray-700 font-medium hover:text-blue-600">
+                      Tài khoản
+                    </Link>
+                  </>
                 )}
                 <button
                   type="button"

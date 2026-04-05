@@ -16,6 +16,14 @@ export async function registerUser(formData) {
       };
     }
 
+    // Validate password length
+    if (password.length < 8) {
+      return {
+        success: false,
+        message: "Mật khẩu phải có ít nhất 8 ký tự",
+      };
+    }
+
     // Check if email already exists
     const existingEmail = await prisma.user.findUnique({
       where: { email },

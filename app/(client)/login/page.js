@@ -44,6 +44,13 @@ function LoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    
+    if (formData.password.length < 8) {
+      setError("Mật khẩu phải có ít nhất 8 ký tự.");
+      toast.error("Mật khẩu phải có ít nhất 8 ký tự.");
+      return;
+    }
+
     setIsLoading(true);
 
     const result = await signIn("credentials", {

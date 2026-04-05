@@ -15,15 +15,18 @@ import {
   Menu,
   X,
   User,
+  Warehouse,
+  Tags,
 } from "lucide-react";
 
 const sidebarLinks = [
   { href: "/admin", label: "Tổng quan", icon: LayoutDashboard },
   { href: "/admin/products", label: "Sản phẩm", icon: Package },
+  { href: "/admin/inventory", label: "Kho hàng", icon: Warehouse },
   { href: "/admin/orders", label: "Đơn hàng", icon: ShoppingCart },
-  { href: "/admin/users", label: "Người dùng", icon: Users },
+  { href: "/admin/users", label: "Khách hàng", icon: Users },
+  { href: "/admin/categories", label: "Danh mục & Hãng", icon: Tags },
   { href: "/admin/profile", label: "Thông tin cá nhân", icon: User },
-  { href: "/admin/settings", label: "Cài đặt", icon: Settings },
 ];
 
 export default function AdminSidebar() {
