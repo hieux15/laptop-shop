@@ -3,7 +3,7 @@
 import { useState, useEffect, Fragment } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { ShoppingCart, Search, Eye, Truck, CheckCircle, Clock, XCircle, Loader2, CreditCard } from 'lucide-react';
+import { ShoppingCart, Search, Eye, Truck, CheckCircle, Clock, XCircle, Loader2, CreditCard, FileSpreadsheet } from 'lucide-react';
 import { getAdminOrders, updateOrderStatus } from '@/app/actions/adminOrder';
 
 const statusConfig = {
@@ -29,6 +29,11 @@ export default function AdminOrdersPage() {
   const [filterStatus, setFilterStatus] = useState('');
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [updatingId, setUpdatingId] = useState(null);
+  const [exportStartDate, setExportStartDate] = useState('');
+  const [exportEndDate, setExportEndDate] = useState('');
+  const [isExporting, setIsExporting] = useState(false);
+  const [revenueYear, setRevenueYear] = useState(new Date().getFullYear());
+  const [revenueMonth, setRevenueMonth] = useState(new Date().getMonth() + 1);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -55,6 +60,65 @@ export default function AdminOrdersPage() {
       console.error('Error fetching orders:', err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleExportOrders = async () => {
+    if (!exportStartDate || !exportEndDate) return;
+    
+    setIsExporting(true);
+    try {
+      const response = await fetch('/api/export/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ startDate: exportStartDate, endDate: exportEndDate }),
+      });
+
+      if (!response.ok) throw new Error('Export failed');
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `don-hang-${exportStartDate}-den-${exportEndDate}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error('Export orders error:', err);
+      alert('Xuất đơn hàng thất bại');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleExportRevenue = async () => {
+    setIsExporting(true);
+    try {
+      const response = await fetch('/api/export/revenue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ year: revenueYear, month: revenueMonth }),
+      });
+
+      if (!response.ok) throw new Error('Export failed');
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const monthNames = ['', 'T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
+      a.download = `doanh-thu-thang-${monthNames[revenueMonth]}-${revenueYear}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error('Export revenue error:', err);
+      alert('Xuất doanh thu thất bại');
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -123,6 +187,84 @@ export default function AdminOrdersPage() {
             </div>
           );
         })}
+      </div>
+
+      {/* Export Section */}
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Xuất Excel</h2>
+        <div className="flex flex-wrap gap-4">
+          {/* Export Orders by Date Range */}
+          <div className="flex-1 min-w-80">
+            <h3 className="text-sm font-medium text-gray-700 mb-2">Đơn hàng theo khoảng thời gian</h3>
+            <div className="flex flex-wrap gap-2 items-end">
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Ngày bắt đầu</label>
+                <input
+                  type="date"
+                  value={exportStartDate}
+                  onChange={(e) => setExportStartDate(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Ngày kết thúc</label>
+                <input
+                  type="date"
+                  value={exportEndDate}
+                  onChange={(e) => setExportEndDate(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <button
+                onClick={handleExportOrders}
+                disabled={isExporting || !exportStartDate || !exportEndDate}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+              >
+                <FileSpreadsheet size={16} />
+                {isExporting ? 'Đang xuất...' : 'Xuất đơn hàng'}
+              </button>
+            </div>
+          </div>
+
+          {/* Export Revenue by Month */}
+          <div className="flex-1 min-w-80">
+            <h3 className="text-sm font-medium text-gray-700 mb-2">Doanh thu theo tháng</h3>
+            <div className="flex flex-wrap gap-2 items-end">
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Tháng</label>
+                <select
+                  value={revenueMonth}
+                  onChange={(e) => setRevenueMonth(Number(e.target.value))}
+                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {Array.from({ length: 12 }, (_, i) => (
+                    <option key={i + 1} value={i + 1}>Tháng {i + 1}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Năm</label>
+                <select
+                  value={revenueYear}
+                  onChange={(e) => setRevenueYear(Number(e.target.value))}
+                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {[2024, 2025, 2026, 2027].map((y) => (
+                    <option key={y} value={y}>{y}</option>
+                  ))}
+                </select>
+              </div>
+              <button
+                onClick={handleExportRevenue}
+                disabled={isExporting}
+                className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+              >
+                <FileSpreadsheet size={16} />
+                {isExporting ? 'Đang xuất...' : 'Xuất doanh thu'}
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-6">
