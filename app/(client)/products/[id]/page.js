@@ -3,13 +3,14 @@
 import { useState, use, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ChevronRight, ShoppingCart, Heart, Share2, Shield, Truck, CreditCard, Check, Minus, Plus, House } from 'lucide-react';
+import { ChevronRight, ShoppingCart, Share2, Shield, Truck, CreditCard, Check, Minus, Plus, House } from 'lucide-react';
 import { ProductCard } from '@/app/(client)/components/ProductCard';
 import { ProductDetailSkeleton } from '@/app/(client)/components/Skeleton';
-import { useCart } from '@/app/context/CartContext'; 
+import { useCart } from '@/app/context/CartContext';
 import { useRouter } from 'next/navigation';
 import ProductReviews from '@/app/(client)/components/ProductReviews';
 import { useSession } from 'next-auth/react';
+import toast from 'react-hot-toast';
 
 export default function ProductDetailPage({ params: paramsPromise }) {
   const params = use(paramsPromise);
@@ -68,6 +69,12 @@ export default function ProductDetailPage({ params: paramsPromise }) {
   const discount = product.originalPrice 
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
+
+  const handleCopyLink = () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url);
+    toast.success('Đã sao chép liên kết sản phẩm!');
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen pb-12">
@@ -139,11 +146,12 @@ export default function ProductDetailPage({ params: paramsPromise }) {
                   {product.brand}
                 </span>
                 <div className="flex gap-1 sm:gap-2">
-                  <button className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-full transition text-gray-500" title="Chia sẻ">
+                  <button 
+                    onClick={handleCopyLink}
+                    className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-full transition text-gray-500" 
+                    title="Sao chép liên kết"
+                  >
                     <Share2 size={18} className="sm:w-5 sm:h-5" />
-                  </button>
-                  <button className="p-1.5 sm:p-2 hover:bg-red-50 rounded-full transition text-gray-500 hover:text-red-500" title="Yêu thích">
-                    <Heart size={18} className="sm:w-5 sm:h-5" />
                   </button>
                 </div>
               </div>
@@ -220,6 +228,7 @@ export default function ProductDetailPage({ params: paramsPromise }) {
                       <span className="xs:inline">Thêm vào giỏ</span>
                     </button>
                   </div>
+
                   <button 
                     onClick={() => {
                       addToCart(product, quantity);
