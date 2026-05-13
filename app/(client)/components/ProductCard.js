@@ -2,9 +2,12 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Star } from "lucide-react";
+import { Star, BarChart2 } from "lucide-react";
+import { useCompare } from "@/app/context/CompareContext";
 
 export function ProductCard({ product }) {
+  const { isInCompare, toggleCompare } = useCompare();
+  const isCompared = isInCompare(product.id);
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
@@ -120,16 +123,32 @@ export function ProductCard({ product }) {
         </div>
 
         {/* Button */}
-        <Link
-          href={product.stock === 0 ? 'javascript:void(0)' : `/products/${product.id}`}
-          className={`w-full py-2.5 rounded-lg font-semibold transition-colors duration-200 text-center block ${
-            product.stock === 0
-              ? 'bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none'
-              : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
-          }`}
-        >
-          {product.stock === 0 ? 'Hết hàng' : 'Xem chi tiết'}
-        </Link>
+        <div className="flex gap-2">
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              toggleCompare(product);
+            }}
+            className={`px-3 py-2.5 rounded-lg font-semibold transition-colors duration-200 text-center ${
+              isCompared
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+            title={isCompared ? 'Xóa khỏi so sánh' : 'Thêm vào so sánh'}
+          >
+            <BarChart2 size={18} />
+          </button>
+          <Link
+            href={product.stock === 0 ? 'javascript:void(0)' : `/products/${product.id}`}
+            className={`flex-1 py-2.5 rounded-lg font-semibold transition-colors duration-200 text-center block ${
+              product.stock === 0
+                ? 'bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none'
+                : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
+            }`}
+          >
+            {product.stock === 0 ? 'Hết hàng' : 'Xem chi tiết'}
+          </Link>
+        </div>
       </div>
     </div>
   );

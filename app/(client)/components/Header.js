@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Laptop, ShoppingCart, User, Menu, X, LogOut, LayoutDashboard } from "lucide-react";
+import { Laptop, ShoppingCart, User, Menu, X, LogOut, LayoutDashboard, BarChart2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useCart } from "../../context/CartContext";
+import { useCompare } from "../../context/CompareContext";
 import { useSession, signOut } from "next-auth/react";
 
 const NAV_LINKS = [
@@ -18,7 +19,7 @@ function NavItem({ href, children, onClick }) {
     <Link
       href={href}
       onClick={onClick}
-      className="text-gray-700 font-medium hover:text-blue-600 transition"
+      className="text-gray-700 font-medium hover:text-blue-600 transition flex items-center h-full"
     >
       {children}
     </Link>
@@ -30,8 +31,10 @@ export default function Header() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [profileName, setProfileName] = useState("");
   const { getTotalItems } = useCart();
+  const { getCompareCount } = useCompare();
   const { data: session, status } = useSession();
   const cartCount = getTotalItems();
+  const compareCount = getCompareCount();
 
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
   const closeMenu = () => setIsMenuOpen(false);
@@ -76,7 +79,7 @@ export default function Header() {
           </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden md:flex items-center gap-8 h-full">
           {NAV_LINKS.map(link => (
             <NavItem key={link.href} href={link.href}>
               {link.label}
@@ -84,26 +87,39 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-6 h-full">
           {!isAdmin && (
-            <NavItem href="/cart">
-              <div className="relative inline-flex items-center">
-                <ShoppingCart className="inline w-5 h-5 mr-1" />
-                <span className="mr-1">Giỏ hàng</span>
-                {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                    {cartCount > 9 ? "9+" : cartCount}
-                  </span>
-                )}
-              </div>
-            </NavItem>
+            <>
+              <NavItem href="/compare">
+                <div className="relative flex items-center">
+                  <BarChart2 className="w-5 h-5 mr-1.5" />
+                  <span>So sánh</span>
+                  {compareCount > 0 && (
+                    <span className="absolute -top-2 -right-2.5 bg-blue-500 text-white text-[10px] font-bold rounded-full w-4.5 h-4.5 flex items-center justify-center border-2 border-white">
+                      {compareCount}
+                    </span>
+                  )}
+                </div>
+              </NavItem>
+              <NavItem href="/cart">
+                <div className="relative flex items-center">
+                  <ShoppingCart className="w-5 h-5 mr-1.5" />
+                  <span>Giỏ hàng</span>
+                  {cartCount > 0 && (
+                    <span className="absolute -top-2 -right-2.5 bg-red-500 text-white text-[10px] font-bold rounded-full w-4.5 h-4.5 flex items-center justify-center border-2 border-white">
+                      {cartCount > 9 ? "9+" : cartCount}
+                    </span>
+                  )}
+                </div>
+              </NavItem>
+            </>
           )}
           {status === "authenticated" ? (
-            <div className="relative">
+            <div className="relative flex items-center h-full">
               <button
                 type="button"
                 onClick={() => setUserMenuOpen((prev) => !prev)}
-                className="flex items-center gap-2 text-gray-700 font-medium hover:text-blue-600 transition"
+                className="flex items-center gap-2 text-gray-700 font-medium hover:text-blue-600 transition h-full"
               >
                 <User className="w-5 h-5" />
                 <span>{profileName || session.user?.name || session.user?.email}</span>
@@ -180,8 +196,10 @@ export default function Header() {
             </div>
           ) : (
             <NavItem href="/login">
-              <User className="inline w-5 h-5 mr-1" />
-              Đăng nhập
+              <div className="flex items-center">
+                <User className="w-5 h-5 mr-1.5" />
+                <span>Đăng nhập</span>
+              </div>
             </NavItem>
           )}
         </div>
@@ -205,16 +223,29 @@ export default function Header() {
             ))}
             <div className="border-t border-gray-200 my-2"></div>
             {!isAdmin && (
-              <NavItem href="/cart" onClick={closeMenu}>
-                <div className="relative inline-flex items-center">
-                  <span className="mr-1">Giỏ hàng</span>
-                  {cartCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                      {cartCount > 9 ? "9+" : cartCount}
-                    </span>
-                  )}
-                </div>
-              </NavItem>
+              <>
+                <NavItem href="/compare" onClick={closeMenu}>
+                  <div className="relative inline-flex items-center">
+                    <BarChart2 className="inline w-5 h-5 mr-1" />
+                    <span className="mr-1">So sánh</span>
+                    {compareCount > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                        {compareCount}
+                      </span>
+                    )}
+                  </div>
+                </NavItem>
+                <NavItem href="/cart" onClick={closeMenu}>
+                  <div className="relative inline-flex items-center">
+                    <span className="mr-1">Giỏ hàng</span>
+                    {cartCount > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                        {cartCount > 9 ? "9+" : cartCount}
+                      </span>
+                    )}
+                  </div>
+                </NavItem>
+              </>
             )}
             {status === "authenticated" ? (
               <>
