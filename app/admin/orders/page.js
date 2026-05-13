@@ -3,8 +3,8 @@
 import { useState, useEffect, Fragment } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { ShoppingCart, Search, Eye, Truck, CheckCircle, Clock, XCircle, Loader2, CreditCard, FileSpreadsheet } from 'lucide-react';
-import { getAdminOrders, updateOrderStatus } from '@/app/actions/adminOrder';
+import { ShoppingCart, Search, Eye, Truck, CheckCircle, Clock, XCircle, Loader2, CreditCard, FileSpreadsheet, BadgeCheck, ChevronLeft, ChevronRight } from 'lucide-react';
+import { getAdminOrders, updateOrderStatus, confirmBankPaymentAction } from '@/app/actions/adminOrder';
 
 const statusConfig = {
   PENDING: { label: 'Chờ xử lý', color: 'yellow', icon: Clock },
@@ -20,6 +20,8 @@ const paymentLabels = {
   VNPAY: 'VNPay',
 };
 
+const ITEMS_PER_PAGE = 10;
+
 export default function AdminOrdersPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -29,11 +31,13 @@ export default function AdminOrdersPage() {
   const [filterStatus, setFilterStatus] = useState('');
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [updatingId, setUpdatingId] = useState(null);
+  const [confirmingPaymentId, setConfirmingPaymentId] = useState(null);
   const [exportStartDate, setExportStartDate] = useState('');
   const [exportEndDate, setExportEndDate] = useState('');
   const [isExporting, setIsExporting] = useState(false);
   const [revenueYear, setRevenueYear] = useState(new Date().getFullYear());
   const [revenueMonth, setRevenueMonth] = useState(new Date().getMonth() + 1);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -140,6 +144,24 @@ export default function AdminOrdersPage() {
     }
   };
 
+  const handleConfirmPayment = async (orderId) => {
+    setConfirmingPaymentId(orderId);
+    try {
+      const result = await confirmBankPaymentAction(orderId);
+      if (result.success) {
+        setOrders(prev => prev.map(o =>
+          o.id === orderId ? { ...o, isPaid: true } : o
+        ));
+      } else {
+        alert(result.error || 'Xác nhận thất bại');
+      }
+    } catch (err) {
+      alert('Có lỗi xảy ra');
+    } finally {
+      setConfirmingPaymentId(null);
+    }
+  };
+
   if (status === 'loading' || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-100">
@@ -156,6 +178,12 @@ export default function AdminOrdersPage() {
     const matchStatus = !filterStatus || order.status === filterStatus;
     return matchSearch && matchStatus;
   });
+
+  const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
+  const pagedOrders = filteredOrders.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   const getProductPreview = (orderDetails) => {
     if (!orderDetails || orderDetails.length === 0) return 'Không có sản phẩm';
@@ -275,13 +303,13 @@ export default function AdminOrdersPage() {
               type="text"
               placeholder="Tìm kiếm mã đơn, tên KH, SĐT..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
               className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <select
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
+            onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1); }}
             className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Tất cả trạng thái</option>
@@ -314,7 +342,7 @@ export default function AdminOrdersPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {filteredOrders.map((order) => {
+                {pagedOrders.map((order) => {
                   const statusInfo = statusConfig[order.status] || statusConfig.PENDING;
                   const StatusIcon = statusInfo.icon;
                   const isExpanded = selectedOrderId === order.id;
@@ -338,9 +366,16 @@ export default function AdminOrdersPage() {
                           {order.total.toLocaleString('vi-VN')}₫
                         </td>
                         <td className="px-4 py-3.5">
-                          <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-700">
-                            {paymentLabels[order.paymentMethod] || order.paymentMethod}
-                          </span>
+                          <div className="flex flex-col gap-1">
+                            <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-700 w-fit">
+                              {paymentLabels[order.paymentMethod] || order.paymentMethod}
+                            </span>
+                            {order.paymentMethod === 'BANK_TRANSFER' && (
+                              <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full w-fit ${order.isPaid ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                {order.isPaid ? <><BadgeCheck size={11} /> Đã nhận tiền</> : 'Chờ chuyển khoản'}
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-4 py-3.5">
                           <select
@@ -414,19 +449,39 @@ export default function AdminOrdersPage() {
 
                                 <div className="bg-white rounded-lg p-4">
                                   <h4 className="font-semibold text-gray-900 mb-3">Tóm tắt thanh toán</h4>
+                                  {(() => {
+                                    const lineSubtotal = (order.orderDetails || []).reduce(
+                                      (s, d) => s + d.price * d.quantity,
+                                      0
+                                    );
+                                    const disc = order.discountAmount || 0;
+                                    const ship = Math.max(
+                                      0,
+                                      order.total + disc - lineSubtotal
+                                    );
+                                    return (
                                   <div className="space-y-2 text-sm">
                                     <div className="flex justify-between">
                                       <span className="text-gray-500">Tạm tính:</span>
-                                      <span className="font-medium text-gray-900">{order.total.toLocaleString('vi-VN')}₫</span>
+                                      <span className="font-medium text-gray-900">{lineSubtotal.toLocaleString('vi-VN')}₫</span>
                                     </div>
                                     <div className="flex justify-between">
                                       <span className="text-gray-500">Phí vận chuyển:</span>
-                                      <span className="font-medium text-gray-900">Miễn phí</span>
+                                      <span className="font-medium text-gray-900">{ship === 0 ? 'Miễn phí' : `${ship.toLocaleString('vi-VN')}₫`}</span>
                                     </div>
+                                    {disc > 0 && (
+                                      <div className="flex justify-between text-emerald-700">
+                                        <span>Giảm giá{order.voucherCode ? ` (${order.voucherCode})` : ''}:</span>
+                                        <span className="font-medium">−{disc.toLocaleString('vi-VN')}₫</span>
+                                      </div>
+                                    )}
                                     <div className="border-t border-gray-200 pt-2 flex justify-between">
                                       <span className="font-semibold text-gray-900">Tổng cộng:</span>
                                       <span className="font-bold text-blue-600">{order.total.toLocaleString('vi-VN')}₫</span>
                                     </div>
+                                  </div>
+                                    );
+                                  })()}
                                     <div className="pt-1">
                                       <span className="text-gray-500">Phương thức:</span>
                                       <div className="flex items-center gap-2 mt-1">
@@ -434,8 +489,28 @@ export default function AdminOrdersPage() {
                                         <span className="font-medium text-gray-900">{paymentLabels[order.paymentMethod] || order.paymentMethod}</span>
                                       </div>
                                     </div>
-                                  </div>
-                                </div>
+                                    {order.paymentMethod === 'BANK_TRANSFER' && (
+                                      <div className="pt-3 border-t border-gray-100 mt-2">
+                                        {order.isPaid ? (
+                                          <div className="flex items-center gap-2 text-green-600 text-sm font-medium">
+                                            <BadgeCheck size={16} />
+                                            Đã xác nhận nhận tiền
+                                          </div>
+                                        ) : (
+                                          <button
+                                            onClick={() => handleConfirmPayment(order.id)}
+                                            disabled={confirmingPaymentId === order.id}
+                                            className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                                          >
+                                            {confirmingPaymentId === order.id
+                                              ? <Loader2 size={14} className="animate-spin" />
+                                              : <BadgeCheck size={14} />}
+                                            Xác nhận đã nhận tiền
+                                          </button>
+                                        )}
+                                      </div>
+                                    )}
+                                 </div>
                               </div>
 
                               <div className="bg-white rounded-lg p-4">
@@ -466,6 +541,53 @@ export default function AdminOrdersPage() {
                 })}
               </tbody>
             </table>
+            {totalPages > 1 && (
+              <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between">
+                <p className="text-sm text-gray-500">
+                  Hiển thị {(currentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, filteredOrders.length)} / {filteredOrders.length} đơn hàng
+                </p>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                  >
+                    <ChevronLeft size={18} />
+                  </button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+                    .reduce((acc, p, idx, arr) => {
+                      if (idx > 0 && p - arr[idx - 1] > 1) acc.push('...');
+                      acc.push(p);
+                      return acc;
+                    }, [])
+                    .map((p, idx) =>
+                      p === '...' ? (
+                        <span key={`dots-${idx}`} className="px-2 text-gray-400">…</span>
+                      ) : (
+                        <button
+                          key={p}
+                          onClick={() => setCurrentPage(p)}
+                          className={`w-9 h-9 rounded-lg text-sm font-medium transition ${
+                            p === currentPage
+                              ? 'bg-blue-600 text-white'
+                              : 'text-gray-600 hover:bg-gray-100'
+                          }`}
+                        >
+                          {p}
+                        </button>
+                      )
+                    )}
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                  >
+                    <ChevronRight size={18} />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
