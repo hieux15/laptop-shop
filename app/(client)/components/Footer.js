@@ -1,7 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
-import { Laptop, Facebook, Youtube, MessageCircle, Send, CreditCard, Smartphone } from 'lucide-react';
+import { Laptop, Facebook, Youtube, MessageCircle, Send, CreditCard, Smartphone, Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { subscribeNewsletterAction } from '@/app/actions/newsletter';
 
 const navigation = [
   { name: 'Trang chủ', href: '/' },
@@ -25,6 +28,22 @@ const privacyLinks = [
 ];
 
 export default function Footer() {
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterLoading, setNewsletterLoading] = useState(false);
+
+  const handleNewsletterSubmit = async (e) => {
+    e.preventDefault();
+    setNewsletterLoading(true);
+    const result = await subscribeNewsletterAction(newsletterEmail);
+    setNewsletterLoading(false);
+    if (result.success) {
+      toast.success('Đăng ký nhận tin thành công!');
+      setNewsletterEmail('');
+    } else {
+      toast.error(result.error || 'Có lỗi xảy ra');
+    }
+  };
+
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -99,17 +118,34 @@ export default function Footer() {
           <div>
             <h3 className="text-xl font-semibold text-white mb-5">Đăng ký nhận tin</h3>
             <p className="text-sm md:text-base mb-4 leading-relaxed">Nhận khuyến mãi và ưu đãi mới nhất.</p>
-            <form className="flex flex-col space-y-3">
+            <form onSubmit={handleNewsletterSubmit} className="flex flex-col space-y-3">
+              <label htmlFor="footer-newsletter-email" className="sr-only">
+                Email của bạn
+              </label>
               <input
+                id="footer-newsletter-email"
                 type="email"
+                name="email"
+                autoComplete="email"
+                value={newsletterEmail}
+                onChange={(e) => setNewsletterEmail(e.target.value)}
                 placeholder="Email của bạn"
-                className="px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white transition"
+                disabled={newsletterLoading}
+                className="px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white transition disabled:opacity-60"
               />
               <button
                 type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-3 rounded-lg transition-colors"
+                disabled={newsletterLoading}
+                className="bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-medium px-4 py-3 rounded-lg transition-colors inline-flex items-center justify-center gap-2"
               >
-                Đăng ký
+                {newsletterLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Đang gửi...
+                  </>
+                ) : (
+                  'Đăng ký'
+                )}
               </button>
             </form>
           </div>

@@ -111,21 +111,43 @@ model CartItem {
   @@map("cart_items")
 }
 
+model Voucher {
+  id          Int       @id @default(autoincrement())
+  code        String    @unique
+  discount    Int
+  maxDiscount Int?      @map("max_discount")
+  minOrder    Int       @map("min_order")
+  usageLimit  Int       @map("usage_limit")
+  usedCount   Int       @default(0) @map("used_count")
+  isActive    Boolean   @default(true) @map("is_active")
+  expiredAt   DateTime? @map("expired_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  orders             Order[]
+
+  @@map("vouchers")
+}
+
 model Order {
-  id            Int         @id @default(autoincrement())
-  userId        Int?        @map("user_id")
-  receiverName  String      @map("receiver_name")
-  receiverPhone String      @map("receiver_phone")
-  street        String
-  city          String
-  province      String
-  paymentMethod String      @default("COD") @map("payment_method")
-  status        OrderStatus @default(PENDING)
-  total         Decimal     @db.Decimal(12, 0)
-  note          String?
-  createdAt     DateTime    @default(now()) @map("created_at")
+  id             Int         @id @default(autoincrement())
+  userId         Int?        @map("user_id")
+  receiverName   String      @map("receiver_name")
+  receiverPhone  String      @map("receiver_phone")
+  street         String
+  city           String
+  province       String
+  paymentMethod  String      @default("COD") @map("payment_method")
+  status         OrderStatus @default(PENDING)
+  total          Decimal     @db.Decimal(12, 0)
+  note           String?
+  voucherId      Int?        @map("voucher_id")
+  discountAmount Int         @default(0) @map("discount_amount")
+  voucherCode    String?     @map("voucher_code")
+  isPaid         Boolean     @default(false) @map("is_paid")
+  createdAt      DateTime    @default(now()) @map("created_at")
 
   user         User?         @relation(fields: [userId], references: [id])
+  voucher      Voucher?      @relation(fields: [voucherId], references: [id], onDelete: SetNull)
   orderDetails OrderDetail[]
 
   @@map("orders")

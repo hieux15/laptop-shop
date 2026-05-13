@@ -446,6 +446,32 @@ export default function OrderDetailPage() {
                       <span className="shrink-0">{(detail.price * detail.quantity).toLocaleString('vi-VN')} ₫</span>
                     </div>
                   ))}
+                  {(() => {
+                    const lineSubtotal = order.orderDetails.reduce(
+                      (s, d) => s + d.price * d.quantity,
+                      0
+                    );
+                    const disc = order.discountAmount || 0;
+                    const ship = Math.max(0, order.total + disc - lineSubtotal);
+                    return (
+                      <>
+                        <div className="flex justify-between text-gray-600 pt-2 border-t border-gray-100">
+                          <span>Tạm tính</span>
+                          <span>{lineSubtotal.toLocaleString('vi-VN')} ₫</span>
+                        </div>
+                        <div className="flex justify-between text-gray-600">
+                          <span>Phí vận chuyển</span>
+                          <span>{ship === 0 ? 'Miễn phí' : `${ship.toLocaleString('vi-VN')} ₫`}</span>
+                        </div>
+                        {disc > 0 && (
+                          <div className="flex justify-between text-emerald-700">
+                            <span>Giảm giá{order.voucherCode ? ` (${order.voucherCode})` : ''}</span>
+                            <span>−{disc.toLocaleString('vi-VN')} ₫</span>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                   <div className="border-t border-gray-100 pt-3 flex justify-between">
                     <span className="font-bold text-gray-900">Tổng cộng:</span>
                     <span className="text-xl font-bold text-blue-600">{order.total.toLocaleString('vi-VN')} ₫</span>

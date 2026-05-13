@@ -2,13 +2,16 @@
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { computeOrderTotal, computeShipping } from "@/lib/orderPricing";
+import { resolveVoucherForOrder } from "./voucher";
+import { sendOrderConfirmationEmail } from "./orderEmails";
 
 export async function createOrderAction(orderData) {
   const session = await auth();
   const userId = session?.user?.id ? parseInt(session.user.id) : null;
 
   try {
-    const { receiverName, receiverPhone, street, city, province, paymentMethod, note, items } = orderData;
+    const { receiverName, receiverPhone, street, city, province, paymentMethod, note, items, voucherCode } = orderData;
 
     const productIds = items.map(i => i.id);
 
@@ -30,19 +33,42 @@ export async function createOrderAction(orderData) {
       if (stock < item.quantity) {
         return {
           success: false,
-          error: `"${product.name}" chỉ còn ${stock} sản phẩm trong kho`
+          error: `"${product?.name ?? 'Sản phẩm'}" chỉ còn ${stock} sản phẩm trong kho`
         };
       }
     }
 
-    const total = items.reduce((sum, item) => {
+    const subtotal = items.reduce((sum, item) => {
       const product = products.find(p => p.id === item.id);
       return sum + Number(product.price) * item.quantity;
     }, 0);
 
+    const voucherResult = await resolveVoucherForOrder(voucherCode, subtotal);
+    if (voucherResult.error) {
+      return { success: false, error: voucherResult.error };
+    }
+
+    const discountAmount = voucherResult.discountAmount ?? 0;
+    const appliedVoucher = voucherResult.voucher;
+    const shippingAmount = computeShipping(subtotal);
+    const total = computeOrderTotal(subtotal, shippingAmount, discountAmount);
+
     // Dùng transaction để đảm bảo toàn vẹn dữ liệu
     const order = await prisma.$transaction(async (tx) => {
-      // Tạo order
+      if (appliedVoucher) {
+        const up = await tx.voucher.updateMany({
+          where: {
+            id: appliedVoucher.id,
+            usedCount: { lt: appliedVoucher.usageLimit },
+            isActive: true,
+          },
+          data: { usedCount: { increment: 1 } },
+        });
+        if (up.count !== 1) {
+          throw new Error('VOUCHER_EXHAUSTED');
+        }
+      }
+
       const newOrder = await tx.order.create({
         data: {
           userId,
@@ -54,6 +80,9 @@ export async function createOrderAction(orderData) {
           paymentMethod,
           note: note || null,
           total,
+          voucherId: appliedVoucher?.id ?? null,
+          discountAmount,
+          voucherCode: appliedVoucher?.code ?? null,
           orderDetails: {
             create: items.map(item => {
               const product = products.find(p => p.id === item.id);
@@ -67,7 +96,6 @@ export async function createOrderAction(orderData) {
         }
       });
 
-      // Trừ tồn kho từng sản phẩm
       for (const item of items) {
         await tx.inventory.updateMany({
           where: { productId: item.id },
@@ -75,7 +103,6 @@ export async function createOrderAction(orderData) {
         });
       }
 
-      // Xóa giỏ hàng (chỉ khi đã đăng nhập)
       if (userId) {
         const cart = await tx.cart.findUnique({ where: { userId } });
         if (cart) {
@@ -86,9 +113,23 @@ export async function createOrderAction(orderData) {
       return newOrder;
     });
 
-    return { success: true, orderId: order.id };
+    // Gửi email xác nhận đặt hàng (không chờ đợi để không block response)
+    sendOrderConfirmationEmail(order.id).catch(error =>
+      console.error('Failed to send confirmation email:', error)
+    );
+
+    return {
+      success: true,
+      orderId: order.id,
+      total,
+      discountAmount,
+      shippingAmount,
+    };
   } catch (e) {
     console.error('Error creating order:', e);
+    if (e?.message === 'VOUCHER_EXHAUSTED') {
+      return { success: false, error: 'Mã giảm giá đã hết lượt. Vui lòng thử lại.' };
+    }
     return { success: false, error: 'Đặt hàng thất bại' };
   }
 }
@@ -114,6 +155,8 @@ export async function getOrdersAction() {
       orders: orders.map(o => ({
         ...o,
         total: Number(o.total),
+        discountAmount: o.discountAmount ?? 0,
+        voucherCode: o.voucherCode,
         orderDetails: o.orderDetails.map(d => ({ ...d, price: Number(d.price) }))
       }))
     };
@@ -166,6 +209,8 @@ export async function getOrderDetailAction(orderId) {
       order: {
         ...order,
         total: Number(order.total),
+        discountAmount: order.discountAmount ?? 0,
+        voucherCode: order.voucherCode,
         orderDetails: order.orderDetails.map(d => ({ ...d, price: Number(d.price) }))
       }
     };

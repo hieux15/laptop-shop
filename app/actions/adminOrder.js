@@ -2,6 +2,7 @@
 
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { sendStatusUpdateEmail } from './orderEmails';
 
 async function checkAdmin() {
   const session = await auth();
@@ -37,8 +38,11 @@ export async function getAdminOrders() {
         city: o.city,
         province: o.province,
         paymentMethod: o.paymentMethod,
+        isPaid: o.isPaid,
         status: o.status,
         total: Number(o.total),
+        discountAmount: o.discountAmount ?? 0,
+        voucherCode: o.voucherCode,
         note: o.note,
         items: o.orderDetails.length,
         orderDetails: o.orderDetails.map(d => ({
@@ -59,14 +63,59 @@ export async function getAdminOrders() {
 export async function updateOrderStatus(orderId, newStatus) {
   await checkAdmin();
   try {
+    // Lấy trạng thái cũ trước khi update
+    const orderBefore = await prisma.order.findUnique({
+      where: { id: parseInt(orderId) },
+      select: { status: true }
+    });
+
+    if (!orderBefore) {
+      return { success: false, error: 'Đơn hàng không tồn tại' };
+    }
+
+    // Update status
     await prisma.order.update({
       where: { id: parseInt(orderId) },
       data: { status: newStatus }
     });
+
+    // Gửi email thông báo (không chờ đợi để không block response)
+    if (orderBefore.status !== newStatus) {
+      sendStatusUpdateEmail(parseInt(orderId), newStatus, orderBefore.status).catch(error =>
+        console.error('Failed to send status update email:', error)
+      );
+    }
+
     return { success: true };
   } catch (e) {
     console.error('updateOrderStatus error:', e);
     return { success: false, error: 'Cập nhật trạng thái thất bại' };
+  }
+}
+
+export async function confirmBankPaymentAction(orderId) {
+  await checkAdmin();
+  try {
+    const order = await prisma.order.findUnique({
+      where: { id: parseInt(orderId) },
+      select: { paymentMethod: true, isPaid: true }
+    });
+
+    if (!order) return { success: false, error: 'Đơn hàng không tồn tại' };
+    if (order.paymentMethod !== 'BANK_TRANSFER') {
+      return { success: false, error: 'Chỉ áp dụng cho đơn chuyển khoản' };
+    }
+    if (order.isPaid) return { success: false, error: 'Đơn hàng đã được xác nhận thanh toán' };
+
+    await prisma.order.update({
+      where: { id: parseInt(orderId) },
+      data: { isPaid: true }
+    });
+
+    return { success: true };
+  } catch (e) {
+    console.error('confirmBankPaymentAction error:', e);
+    return { success: false, error: 'Xác nhận thanh toán thất bại' };
   }
 }
 

@@ -17,6 +17,7 @@ import {
   User,
   Warehouse,
   Tags,
+  TicketPercent,
 } from "lucide-react";
 
 const sidebarLinks = [
@@ -25,6 +26,7 @@ const sidebarLinks = [
   { href: "/admin/inventory", label: "Kho hàng", icon: Warehouse },
   { href: "/admin/orders", label: "Đơn hàng", icon: ShoppingCart },
   { href: "/admin/users", label: "Khách hàng", icon: Users },
+  { href: "/admin/vouchers", label: "Mã giảm giá", icon: TicketPercent },
   { href: "/admin/categories", label: "Danh mục & Hãng", icon: Tags },
   { href: "/admin/profile", label: "Thông tin cá nhân", icon: User },
 ];
