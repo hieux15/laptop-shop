@@ -43,11 +43,11 @@ export default function ComparePage() {
 
   if (count === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-indigo-50">
         <div className="max-w-4xl mx-auto px-4 py-20">
           <div className="text-center">
             <div className="relative mb-8">
-              <div className="w-24 h-24 mx-auto bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center">
+              <div className="w-24 h-24 mx-auto bg-linear-to-br from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center">
                 <BarChart2 className="w-12 h-12 text-blue-600" />
               </div>
               <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center animate-bounce">
@@ -85,7 +85,7 @@ export default function ComparePage() {
             </div>
             <Link
               href="/products"
-              className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              className="inline-flex items-center gap-3 bg-linear-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               <BarChart2 className="w-5 h-5" />
               Bắt đầu so sánh sản phẩm
@@ -97,7 +97,7 @@ export default function ComparePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-indigo-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
@@ -128,7 +128,7 @@ export default function ComparePage() {
 
               {/* Product Image */}
               <Link href={`/products/${product.id}`}>
-                <div className="relative h-48 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+                <div className="relative h-48 bg-linear-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
                   <Image
                     src={product.image}
                     alt={product.name}
@@ -208,7 +208,7 @@ export default function ComparePage() {
 
         {/* Specifications Comparison */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
+          <div className="bg-linear-to-r from-blue-600 to-indigo-600 px-6 py-4">
             <h2 className="text-xl font-semibold text-white flex items-center gap-2">
               <BarChart2 className="w-5 h-5" />
               Thông số kỹ thuật
@@ -221,7 +221,7 @@ export default function ComparePage() {
                 <tr>
                   <th className="text-left p-4 font-semibold text-gray-700 w-48">Thông số</th>
                   {compareList.map((product, index) => (
-                    <th key={product.id} className="p-4 text-center font-semibold text-gray-700 min-w-[200px]">
+                    <th key={product.id} className="p-4 text-center font-semibold text-gray-700 min-w-50">
                       Sản phẩm {index + 1}
                     </th>
                   ))}
@@ -257,7 +257,7 @@ export default function ComparePage() {
           </Link>
           <Link
             href="/cart"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+            className="inline-flex items-center gap-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl"
           >
             <TrendingUp className="w-5 h-5" />
             Đến giỏ hàng
