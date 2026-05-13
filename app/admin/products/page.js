@@ -7,7 +7,7 @@ import Image from 'next/image';
 import {
   Package, Plus, Edit, Trash2, Save, X,
   Search, Eye, EyeOff, ChevronLeft, ChevronRight,
-  AlertCircle, CheckCircle, Loader2
+  AlertCircle, CheckCircle, Loader2, Warehouse
 } from 'lucide-react';
 import {
   getAdminProducts,
@@ -653,7 +653,30 @@ export default function AdminProductsPage() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
-                  {!editingProduct && (
+                  {editingProduct ? (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Tồn kho</label>
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1">
+                          <input
+                            type="number" name="stock" value={formData.stock}
+                            readOnly
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 text-gray-700 cursor-not-allowed"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => router.push(`/admin/inventory?search=${encodeURIComponent(editingProduct.name)}`)}
+                          className="inline-flex items-center gap-2 px-3 py-2 bg-blue-100 text-blue-700 border border-blue-200 rounded-lg text-sm font-medium hover:bg-blue-200 transition"
+                          title="Điều chỉnh tồn kho"
+                        >
+                          <Warehouse size={16} />
+                          Điều chỉnh kho
+                        </button>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">Chỉ có thể điều chỉnh kho hàng tại trang Quản lý kho</p>
+                    </div>
+                  ) : (
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">Tồn kho ban đầu <span className="text-red-500">*</span></label>
                       <input

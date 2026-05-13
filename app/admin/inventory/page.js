@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import {
   Warehouse,
@@ -31,7 +31,7 @@ import {
   adjustInventoryQuantity,
 } from '@/app/actions/adminInventory';
 
-const ITEMS_PER_PAGE = 15;
+const ITEMS_PER_PAGE = 10;
 
 function Toast({ toasts, onRemove }) {
   return (
@@ -61,13 +61,14 @@ function Toast({ toasts, onRemove }) {
 export default function AdminInventoryPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   
   const [inventories, setInventories] = useState([]);
   const [lowStockProducts, setLowStockProducts] = useState([]);
   const [stats, setStats] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get('search') || '');
   const [filterStock, setFilterStock] = useState('');
   const [sortField, setSortField] = useState('productName');
   const [sortDirection, setSortDirection] = useState('asc');
