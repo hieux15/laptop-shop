@@ -31,14 +31,22 @@ export default function AdminHeader() {
 
   return (
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-6">
-      {/* Search Bar - Simple */}
+      {/* Quick Product Search */}
       <div className="flex-1 max-w-xl hidden sm:block">
         <div className="relative">
           <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
-            placeholder="Tìm kiếm..."
+            placeholder="Tìm kiếm sản phẩm nhanh..."
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                const query = e.target.value.trim();
+                if (query) {
+                  router.push(`/admin/products?search=${encodeURIComponent(query)}`);
+                }
+              }
+            }}
           />
         </div>
       </div>

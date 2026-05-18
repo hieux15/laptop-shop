@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import {
   Package, Plus, Edit, Trash2, Save, X,
@@ -67,6 +67,7 @@ function Toast({ toasts, onRemove }) {
 export default function AdminProductsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -99,6 +100,13 @@ export default function AdminProductsPage() {
       fetchData();
     }
   }, [status, session]);
+
+  useEffect(() => {
+    const searchParam = searchParams.get('search');
+    if (searchParam) {
+      setSearchQuery(searchParam);
+    }
+  }, [searchParams]);
 
   const fetchData = async () => {
     setIsLoading(true);
