@@ -329,13 +329,7 @@ export default function RegisterPage() {
                   >
                     điều khoản dịch vụ
                   </Link>{" "}
-                  và{" "}
-                  <Link
-                    href="/privacy"
-                    className="font-bold text-blue-600 hover:text-blue-500 transition"
-                  >
-                    chính sách bảo mật
-                  </Link>
+                  của LapProVN
                 </label>
                 {errors.agreeToTerms && (
                   <p className="mt-1 text-sm text-red-600">{errors.agreeToTerms}</p>

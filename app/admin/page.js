@@ -341,10 +341,22 @@ export default function AdminDashboardPage() {
                             ? 'bg-green-50 text-green-700'
                             : order.status === 'SHIPPING'
                             ? 'bg-blue-50 text-blue-700'
+                            : order.status === 'CONFIRMED'
+                            ? 'bg-indigo-50 text-indigo-700'
+                            : order.status === 'CANCELLED'
+                            ? 'bg-red-50 text-red-700'
                             : 'bg-yellow-50 text-yellow-700'
                         }`}
                       >
-                        {order.status === 'DELIVERED' ? 'Đã giao' : order.status === 'SHIPPING' ? 'Đang giao' : 'Đang xử lý'}
+                        {order.status === 'DELIVERED'
+                          ? 'Đã giao'
+                          : order.status === 'SHIPPING'
+                          ? 'Đang giao'
+                          : order.status === 'CONFIRMED'
+                          ? 'Đã xác nhận'
+                          : order.status === 'CANCELLED'
+                          ? 'Đã hủy'
+                          : 'Chờ xử lý'}
                       </span>
                     </td>
                   </tr>

@@ -160,7 +160,7 @@ export default function ComparePage() {
                 </div>
 
                 {/* Rating */}
-                {product.rating && (
+                {product.reviewCount > 0 && (
                   <div className="flex items-center gap-1 mb-3">
                     <div className="flex gap-0.5">
                       {[1, 2, 3, 4, 5].map(star => (
