@@ -206,13 +206,10 @@ export default function ProductReviews({ productId }) {
                       </span>
                     </div>
                     <StarRating value={review.rating} readonly size={4} />
-                    {review.comment && (
-                      <p className="text-gray-700 text-sm mt-2">{review.comment}</p>
-                    )}
-                    {review.isVerified && (
-                      <span className="inline-block mt-2 text-xs text-green-600 font-medium">✓ Đã mua hàng</span>
-                    )}
-                  </div>
+                     {review.comment && (
+                       <p className="text-gray-700 text-sm mt-2">{review.comment}</p>
+                     )}
+                   </div>
                 </div>
               </div>
             ))}

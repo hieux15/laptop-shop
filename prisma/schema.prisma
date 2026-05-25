@@ -172,7 +172,6 @@ model Review {
   productId  Int      @map("product_id")
   rating     Int
   comment    String?  @db.Text
-  isVerified Boolean  @default(false) @map("is_verified")
   createdAt  DateTime @default(now()) @map("created_at")
 
   user    User    @relation(fields: [userId], references: [id])

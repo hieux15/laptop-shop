@@ -137,15 +137,15 @@ INSERT INTO order_details (id, order_id, product_id, quantity, price) VALUES
 -- ============================================================
 -- 9. REVIEW (chỉ từ đơn delivered)
 -- ============================================================
-INSERT INTO reviews (id, user_id, product_id, rating, comment, is_verified, created_at) VALUES
+INSERT INTO reviews (id, user_id, product_id, rating, comment, created_at) VALUES
 
 (1, 2, 6, 5,
- 'Máy chiến game cực mượt, ROG Strix không phụ lòng. RTX 4060 chạy Cyberpunk 2077 Ultra 60fps ổn định. Tản nhiệt tốt, sau 2 tiếng chơi liên tục nhiệt độ vẫn kiểm soát được. Bàn phím RGB đẹp, gõ phím có phản hồi tốt.',
- 1, DATE_SUB(NOW(), INTERVAL 20 DAY)),
+  'Máy chiến game cực mượt, ROG Strix không phụ lòng. RTX 4060 chạy Cyberpunk 2077 Ultra 60fps ổn định. Tản nhiệt tốt, sau 2 tiếng chơi liên tục nhiệt độ vẫn kiểm soát được. Bàn phím RGB đẹp, gõ phím có phản hồi tốt.',
+  DATE_SUB(NOW(), INTERVAL 20 DAY)),
 
 (2, 3, 4, 4,
- 'Dell XPS 13 thiết kế rất đẹp và sang, màn OLED sắc nét đến mức không muốn rời mắt. Hiệu năng Core i7 làm việc văn phòng và lập trình rất ổn. Trừ 1 sao vì chỉ có 2 cổng Thunderbolt, phải mua thêm hub.',
- 1, DATE_SUB(NOW(), INTERVAL 10 DAY));
+  'Dell XPS 13 thiết kế rất đẹp và sang, màn OLED sắc nét đến mức không muốn rời mắt. Hiệu năng Core i7 làm việc văn phòng và lập trình rất ổn. Trừ 1 sao vì chỉ có 2 cổng Thunderbolt, phải mua thêm hub.',
+  DATE_SUB(NOW(), INTERVAL 10 DAY));
 
 -- ============================================================
 -- XONG! Kiểm tra nhanh:
