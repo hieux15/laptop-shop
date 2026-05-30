@@ -182,7 +182,7 @@ export default function CheckoutPage() {
           router.push(`/checkout/result?orderId=${result.orderId}`);
         }
       } else {
-        router.push(`/checkout/result?orderId=${result.orderId}`);
+        window.location.href = `/checkout/result?orderId=${result.orderId}`;
       }
     } else {
       setIsSubmitting(false);

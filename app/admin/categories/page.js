@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { FolderOpen, Tags, Search, Plus, Pencil, Trash2, Loader2, Package } from 'lucide-react';
+import { FolderOpen, Tags, Search, Plus, Pencil, Trash2, Loader2, Package, Upload } from 'lucide-react';
 import { getAdminCategories, createCategory, updateCategory, deleteCategory } from '@/app/actions/adminCategory';
 import { getAdminBrands, createBrand, updateBrand, deleteBrand } from '@/app/actions/adminBrand';
 
@@ -496,23 +496,69 @@ export default function AdminCategoriesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Logo (URL)
+                  Logo
                 </label>
-                <input
-                  type="text"
-                  value={brandLogo}
-                  onChange={(e) => setBrandLogo(e.target.value)}
-                  placeholder="https://example.com/logo.png"
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                {brandLogo && (
-                  <div className="mt-2">
-                    <p className="text-xs text-gray-500 mb-1">Preview:</p>
-                    <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
+                <div className="flex gap-3 items-start">
+                  <div className="flex-1 space-y-2">
+                    <input
+                      type="text"
+                      value={brandLogo}
+                      onChange={(e) => setBrandLogo(e.target.value)}
+                      placeholder="/brands/brand-1.png"
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <label className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 cursor-pointer transition border border-gray-300">
+                      <Upload size={16} />
+                      Tải logo lên
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/gif,image/avif,image/svg+xml"
+                        className="hidden"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+
+                          const uploadFormData = new FormData();
+                          uploadFormData.append('file', file);
+
+                          try {
+                            const res = await fetch('/api/upload/brand-logo', {
+                              method: 'POST',
+                              body: uploadFormData,
+                            });
+                            const data = await res.json();
+
+                            if (data.success) {
+                              setBrandLogo(data.imageUrl);
+                            } else {
+                              alert(data.error || 'Tải logo thất bại');
+                            }
+                          } catch (err) {
+                            alert('Lỗi kết nối khi tải logo');
+                          }
+
+                          // Reset input để có thể chọn lại file giống tên
+                          e.target.value = '';
+                        }}
+                      />
+                    </label>
+                    {brandLogo && (
+                      <button
+                        type="button"
+                        onClick={() => setBrandLogo('')}
+                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
+                        title="Xóa logo"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                  </div>
+                  {brandLogo && (
+                    <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 shrink-0">
                       <img src={brandLogo} alt="Preview" className="w-full h-full object-contain" />
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
 

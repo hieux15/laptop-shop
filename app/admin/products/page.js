@@ -7,7 +7,7 @@ import Image from 'next/image';
 import {
   Package, Plus, Edit, Trash2, Save, X,
   Search, Eye, EyeOff, ChevronLeft, ChevronRight,
-  AlertCircle, CheckCircle, Loader2, Warehouse
+  AlertCircle, CheckCircle, Loader2, Warehouse, Upload
 } from 'lucide-react';
 import {
   getAdminProducts,
@@ -619,14 +619,83 @@ export default function AdminProductsPage() {
                       ))}
                     </select>
                   </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">URL hình ảnh</label>
-                    <input
-                      type="text" name="image" value={formData.image}
-                      onChange={handleInputChange}
-                      placeholder="/products/laptop-1.webp"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
+              <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Hình ảnh sản phẩm</label>
+                    <div className="flex gap-3 items-start">
+                      <div className="flex-1 space-y-2">
+                        <input
+                          type="text" name="image" value={formData.image}
+                          onChange={handleInputChange}
+                          placeholder="/products/laptop-1.webp"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <div className="flex items-center gap-3">
+                          <label className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 cursor-pointer transition border border-gray-300">
+                            <Upload size={16} />
+                            Tải ảnh lên
+                            <input
+                              type="file"
+                              accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                              className="hidden"
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                
+                                const uploadFormData = new FormData();
+                                uploadFormData.append('file', file);
+                                
+                                const toastId = Date.now();
+                                setToasts(prev => [...prev, { id: toastId, message: 'Đang tải ảnh lên...', type: 'success' }]);
+                                
+                                try {
+                                  const res = await fetch('/api/upload/product-image', {
+                                    method: 'POST',
+                                    body: uploadFormData,
+                                  });
+                                  const data = await res.json();
+                                  
+                                  setToasts(prev => prev.filter(t => t.id !== toastId));
+                                  
+                                  if (data.success) {
+                                    setFormData(prev => ({ ...prev, image: data.imageUrl }));
+                                    addToast('Tải ảnh lên thành công!', 'success');
+                                  } else {
+                                    addToast(data.error || 'Tải ảnh thất bại', 'error');
+                                  }
+                                } catch (err) {
+                                  setToasts(prev => prev.filter(t => t.id !== toastId));
+                                  addToast('Lỗi kết nối khi tải ảnh', 'error');
+                                }
+                                
+                                // Reset input để có thể chọn lại file giống tên
+                                e.target.value = '';
+                              }}
+                            />
+                          </label>
+                          {formData.image && (
+                            <button
+                              type="button"
+                              onClick={() => setFormData(prev => ({ ...prev, image: '' }))}
+                              className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
+                              title="Xóa ảnh"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      {formData.image && (
+                        <div className="relative w-24 h-24 rounded-lg overflow-hidden bg-gray-100 border border-gray-200 shrink-0">
+                          <Image
+                            src={formData.image}
+                            alt="Preview"
+                            fill
+                            className="object-cover"
+                            sizes="96px"
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Mô tả</label>

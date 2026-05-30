@@ -1,81 +1,45 @@
-# Laptop Pro VN - Website Bán Laptop
+# 🛒 Laptop Pro VN - Website Bán Laptop
 
-Website thương mại điện tử bán laptop chính hãng với đầy đủ tính năng quản lý sản phẩm, giỏ hàng, thanh toán và hỗ trợ khách hàng bằng AI.
+Website thương mại điện tử bán laptop chính hãng với đầy đủ tính năng: quản lý sản phẩm, giỏ hàng, thanh toán VNPay/COD, chatbot AI tư vấn.
 
-## Tính năng chính
+**Stack:** Next.js 16 (App Router) + React 19 + TailwindCSS 4 + Prisma ORM + MariaDB/MySQL + NextAuth.js v5
 
-### Khách hàng
-- **Trang chủ**: Hiển thị sản phẩm nổi bật, danh mục laptop, đánh giá khách hàng
-- **Danh sách sản phẩm**: Lọc theo danh mục (Gaming, Văn phòng, Mỏng nhẹ, Đồ họa), thương hiệu
-- **Chi tiết sản phẩm**: Thông số kỹ thuật, đánh giá, so sánh
-- **Giỏ hàng**: Quản lý sản phẩm, tính toán giá trị
-- **So sánh sản phẩm**: So sánh thông số kỹ thuật nhiều sản phẩm
-- **Đặt hàng**: Điền thông tin giao hàng, chọn phương thức thanh toán
-- **Thanh toán**: Tích hợp VNPay và COD
-- **Mã giảm giá**: Áp dụng voucher giảm giá
-- **Quản lý đơn hàng**: Xem lịch sử đơn hàng, trạng thái
-- **Chatbot AI**: Tư vấn sản phẩm thông minh bằng Google Gemini AI
+---
 
-### Quản trị viên
-- **Dashboard**: Thống kê doanh thu, đơn hàng, sản phẩm, người dùng
-- **Biểu đồ**: Doanh thu theo ngày/tháng (Recharts)
-- **Quản lý sản phẩm**: Thêm, sửa, xóa sản phẩm với hình ảnh và thông số
-- **Quản lý danh mục**: Thêm/sửa/xóa danh mục sản phẩm
-- **Quản lý thương hiệu**: Thêm/sửa/xóa thương hiệu
-- **Quản lý tồn kho**: Cập nhật số lượng tồn kho
-- **Quản lý đơn hàng**: Xem, cập nhật trạng thái đơn hàng
-- **Quản lý người dùng**: Xem danh sách, kích hoạt/vô hiệu hóa
-- **Quản lý voucher**: Tạo mã giảm giá, theo dõi sử dụng
-- **Xuất báo cáo**: Xuất dữ liệu sang Excel
+## 🔧 Yêu cầu
 
-### Công nghệ
-- **Frontend**: Next.js 16 (App Router), React 19, TailwindCSS 4
-- **Backend**: Next.js API Routes, Prisma ORM
-- **Database**: MariaDB/MySQL
-- **Authentication**: NextAuth.js v5 với JWT
-- **Payment**: VNPay Integration
-- **AI**: Google Gemini AI (Chatbot tư vấn)
-- **Email**: Nodemailer
-- **Charts**: Recharts
-- **Icons**: Lucide React
+- **Node.js** 18+ (kiểm tra: `node -v`)
+- **XAMPP** (bật **Apache** + **MySQL**)
+- **npm/yarn/pnpm** (kiểm tra: `npm -v`)
 
-## Cài đặt
+---
 
-### Yêu cầu
-- Node.js 18+
-- MariaDB hoặc MySQL
-- npm, yarn, pnpm hoặc bun
+## 🚀 Cài đặt nhanh
 
-### Bước 1: Clone repository
+### 1. Clone & cài dependencies
+
 ```bash
 git clone https://github.com/hieux15/laptop-shop.git
 cd laptop-shop
-```
-
-### Bước 2: Cài đặt dependencies
-```bash
 npm install
-# hoặc
-yarn install
-# hoặc
-pnpm install
 ```
 
-### Bước 3: Cấu hình biến môi trường
-Tạo file `.env` trong thư mục gốc:
+### 2. Tạo file .env
+
+Tạo file `.env` trong thư mục gốc với nội dung:
 
 ```env
-# Database
-DATABASE_URL="mysql://user:password@localhost:3306/laptop_shop"
+# Database (MySQL trong XAMPP)
+DATABASE_URL="mysql://root:@localhost:3306/laptop_shop"
 
 # NextAuth
-AUTH_SECRET="your-secret-key"
+AUTH_SECRET="your-secret-key-here"
 NEXTAUTH_URL="http://localhost:3000"
 
 # Google Gemini AI (cho Chatbot)
 GOOGLE_GEMINI_API_KEY="your-gemini-api-key"
 
-# Email (Nodemailer) - tùy chọn
+# Email (tùy chọn)
 MAIL_HOST="smtp.gmail.com"
 MAIL_PORT="587"
 MAIL_USER="your-email@gmail.com"
@@ -89,80 +53,98 @@ VNPAY_PAYMENT_URL="https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
 VNPAY_RETURN_URL="http://localhost:3000/api/vnpay/vnpay-return"
 ```
 
-### Bước 4: Khởi tạo database
-```bash
-npx prisma generate
-npx prisma migrate dev
-```
+> **Lưu ý:** Với XAMPP, mặc định user MySQL là `root`, password rỗng.  
+> Nếu bạn đặt password MySQL, sửa lại `DATABASE_URL` tương ứng.
 
-### Bước 5: Seed dữ liệu (tùy chọn)
+### 3. Tạo database & import dữ liệu mẫu
+
+#### Cách 1: Dùng phpMyAdmin
+
+1. Mở **XAMPP Control Panel** → Start **Apache** + **MySQL**
+2. Vào trình duyệt: http://localhost/phpmyadmin
+3. Nhấn **New** → Tạo database tên `laptop_shop`, chọn **utf8mb4_general_ci**
+4. Chọn database `laptop_shop` vừa tạo
+5. Nhấn tab **Import** → **Chọn file** → chọn file `seed.sql` trong thư mục dự án
+6. Kéo xuống nhấn **Go** (hoặc Import) → đợi import xong
+
+#### Cách 2: Dùng command line (nếu có MySQL CLI)
+
 ```bash
-# Chạy file seed.sql trong thư mục gốc
 mysql -u root -p laptop_shop < seed.sql
 ```
 
-### Bước 6: Chạy development server
+### 4. Generate Prisma Client
+
 ```bash
-npm run dev
-# hoặc
-yarn dev
-# hoặc
-pnpm dev
+npx prisma generate
 ```
 
-Mở [http://localhost:3000](http://localhost:3000) để xem website.
+### 5. Chạy dev server
 
-## Tài khoản mặc định
+```bash
+npm run dev
+```
 
-**Admin**:
-- Email: admin@example.com
-- Mật khẩu: admin123
+Mở trình duyệt: http://localhost:3000 🎉
 
-**User**:
-- Email: user@example.com
-- Mật khẩu: user123
+---
 
-## Cấu trúc dự án
+## 👤 Tài khoản mặc định
+
+| Vai trò | Email                | Mật khẩu   |
+|---------|----------------------|------------|
+| Admin   | admin@laptopshop.vn  | Admin@123  |
+| User    | an.nguyen@gmail.com  | Admin@123  |
+| User    | binh.tran@gmail.com  | Admin@123  |
+| User    | tuan.le@gmail.com    | Admin@123  |
+
+> **Admin panel:** http://localhost:3000/admin
+
+---
+
+tài khoản vn pay 
+Ngân hàng	NCB
+Số thẻ	9704198526191432198
+Tên chủ thẻ	NGUYEN VAN A
+Ngày phát hành	07/15
+Mật khẩu OTP	123456
+## 📁 Cấu trúc thư mục
 
 ```
 laptop-shop/
 ├── app/
-│   ├── (client)/          # Pages khách hàng
-│   │   ├── components/    # Components client (ChatBot, Header, Footer...)
-│   │   ├── cart/          # Giỏ hàng
-│   │   ├── checkout/      # Thanh toán
-│   │   ├── products/      # Sản phẩm
+│   ├── (client)/        # Giao diện khách hàng
+│   │   ├── components/  # Header, Footer, ChatBot...
+│   │   ├── cart/        # Giỏ hàng
+│   │   ├── checkout/    # Thanh toán
+│   │   ├── products/    # Trang sản phẩm
 │   │   └── ...
-│   ├── admin/             # Pages quản trị
-│   │   ├── products/      # Quản lý sản phẩm
-│   │   ├── orders/        # Quản lý đơn hàng
-│   │   └── ...
-│   ├── actions/           # Server Actions
-│   ├── api/               # API Routes
-│   └── context/           # Context Providers
-├── lib/                   # Utilities
-├── prisma/                # Database schema & migrations
-└── public/                # Static assets
+│   ├── admin/           # Quản trị (dashboard, products, orders...)
+│   ├── actions/         # Server Actions
+│   ├── api/             # API Routes (auth, vnpay...)
+│   └── context/         # React Context
+├── lib/                 # Utilities (prisma, gemini, vnpay...)
+├── prisma/              # Schema Prisma + migrations
+└── public/              # Ảnh tĩnh
 ```
 
-## Lệnh hữu ích
+---
 
-```bash
-# Development
-npm run dev
+## 📋 Lệnh hữu ích
 
-# Build production
-npm run build
+| Lệnh                        | Mô tả                    |
+|-----------------------------|--------------------------|
+| `npm run dev`               | Chạy dev server          |
+| `npm run build`             | Build production         |
+| `npm start`                 | Chạy production          |
+| `npm test`                  | Chạy test (Vitest)       |
+| `npx prisma studio`         | Mở Prisma Studio (GUI)   |
+| `npx prisma generate`       | Generate Prisma Client   |
 
-# Start production
-npm start
+---
 
-# Database
-npx prisma studio          # Mở Prisma Studio
-npx prisma migrate dev     # Tạo migration
-npx prisma generate        # Generate Prisma Client
-```
+## 📝 Ghi chú
 
-## License
-
-ISC
+- **Chatbot AI:** Cần cung cấp `GOOGLE_GEMINI_API_KEY` trong `.env` để chatbot hoạt động. Lấy key tại https://aistudio.google.com/apikey
+- **VNPay:** Dùng môi trường sandbox. Đăng ký test tại https://sandbox.vnpayment.vn
+- **Email:** Dùng App Password của Gmail (cần bật 2FA). Xem hướng dẫn Google.
