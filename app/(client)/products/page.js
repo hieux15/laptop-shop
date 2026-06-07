@@ -92,7 +92,7 @@ function ProductsPageContent() {
 
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [selectedCategories, setSelectedCategories] = useState(
-    searchParams.get('categories') ? searchParams.get('categories').split(',') : []
+    searchParams.get('categories') ? searchParams.get('categories').split(',') : searchParams.get('category') ? [searchParams.get('category')] : []
   );
   const [selectedBrands, setSelectedBrands] = useState(
     searchParams.get('brands') ? searchParams.get('brands').split(',') : []
