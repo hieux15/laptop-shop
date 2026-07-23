@@ -43,8 +43,17 @@ const PAYMENT_METHODS = [
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const { cartItems, isLoaded, getSubtotal, clearCart } = useCart();
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.replace('/login?callbackUrl=/checkout');
+    }
+  }, [status, router]);
+
+  if (status === 'loading') return <CheckoutSkeleton />;
+  if (status === 'unauthenticated') return null;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});

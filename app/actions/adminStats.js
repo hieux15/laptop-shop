@@ -16,8 +16,7 @@ export async function getRevenueStats(period = '30days') {
     const now = new Date();
     let startDate;
     let dateFormat;
-    let groupBy;
-
+    
     // Calculate start date based on period
     switch (period) {
       case '7days':

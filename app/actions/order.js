@@ -8,7 +8,10 @@ import { sendOrderConfirmationEmail } from "./orderEmails";
 
 export async function createOrderAction(orderData) {
   const session = await auth();
-  const userId = session?.user?.id ? parseInt(session.user.id) : null;
+  if (!session?.user?.id) {
+    return { success: false, error: 'Vui lòng đăng nhập để đặt hàng' };
+  }
+  const userId = parseInt(session.user.id);
 
   try {
     const { receiverName, receiverPhone, street, city, province, paymentMethod, note, items, voucherCode } = orderData;
