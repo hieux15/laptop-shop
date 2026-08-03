@@ -2,15 +2,15 @@
 
 Website thương mại điện tử bán laptop chính hãng với đầy đủ tính năng: quản lý sản phẩm, giỏ hàng, thanh toán VNPay/COD, chatbot AI tư vấn.
 
-**Stack:** Next.js 16 (App Router) + React 19 + TailwindCSS 4 + Prisma ORM + MariaDB/MySQL + NextAuth.js v5
+**Stack:** Next.js 16 (App Router) + React 19 + TailwindCSS 4 + Prisma 6 ORM + PostgreSQL (Supabase Cloud) + NextAuth.js v5
 
 ---
 
 ## 🔧 Yêu cầu
 
 - **Node.js** 18+ (kiểm tra: `node -v`)
-- **XAMPP** (bật **Apache** + **MySQL**)
 - **npm/yarn/pnpm** (kiểm tra: `npm -v`)
+- **Tài khoản Supabase** miễn phí tại https://supabase.com (dùng database PostgreSQL trên cloud)
 
 ---
 
@@ -24,15 +24,23 @@ cd laptop-shop
 npm install
 ```
 
-### 2. Tạo file .env
+### 2. Tạo project Supabase
+
+1. Đăng nhập vào https://supabase.com/dashboard → **New project**
+2. Đặt tên project, chọn **Database Password** (nhớ kỹ) và **Region** gần bạn nhất
+3. Sau khi tạo xong, vào **Project Settings → Database → Connection strings**
+4. Copy **Session pooler** connection string (dạng `postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres`)
+
+### 3. Tạo file .env
 
 Tạo file `.env` trong thư mục gốc với nội dung:
 
 ```env
-# Database (MySQL trong XAMPP)
-DATABASE_URL="mysql://root:@localhost:3306/laptop_shop"
+# Database (Supabase Cloud - PostgreSQL)
+DATABASE_URL="postgresql://postgres.<project-ref>:<db-password>@aws-0-<region>.pooler.supabase.com:5432/postgres"
+DIRECT_URL="postgresql://postgres.<project-ref>:<db-password>@aws-0-<region>.pooler.supabase.com:5432/postgres"
 
-# NextAuth
+# NextAuth (generate secret: openssl rand -base64 32)
 AUTH_SECRET="your-secret-key-here"
 NEXTAUTH_URL="http://localhost:3000"
 
@@ -46,40 +54,36 @@ MAIL_USER="your-email@gmail.com"
 MAIL_PASS="your-app-password"
 MAIL_FROM="noreply@laptoppro.vn"
 
-# VNPay
-VNPAY_TMN_CODE="your-tmn-code"
-VNPAY_HASH_SECRET="your-hash-secret"
-VNPAY_PAYMENT_URL="https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
-VNPAY_RETURN_URL="http://localhost:3000/api/vnpay/vnpay-return"
+# VNPay Sandbox
+VNP_TMNCODE="your-tmn-code"
+VNP_HASHSECRET="your-hash-secret"
+VNP_URL="https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
+VNP_API="https://sandbox.vnpayment.vn/merchant_webapi/api/transaction"
+VNP_RETURNURL="http://localhost:3000/api/vnpay/vnpay-return"
 ```
 
-> **Lưu ý:** Với XAMPP, mặc định user MySQL là `root`, password rỗng.  
-> Nếu bạn đặt password MySQL, sửa lại `DATABASE_URL` tương ứng.
+> **Lưu ý quan trọng:**
+> - `<project-ref>` là mã project trong Supabase (ví dụ `moeomryujgebszomjpnk`), nằm trong URL dashboard.
+> - `<region>` theo format của Supabase (ví dụ `ap-northeast-1` = Tokyo, `ap-southeast-1` = Singapore).
+> - Port `5432` = Connection Pooler, dùng trong production để tránh giới hạn kết nối.
+> - Port `6543` = Session pooler, dùng với Prisma khi cần (kiểm tra bảng **Connection strings** trong Dashboard).
+> - **Không commit file `.env` lên Git** — đảm bảo nó nằm trong `.gitignore`.
 
-### 3. Tạo database & import dữ liệu mẫu
-
-#### Cách 1: Dùng phpMyAdmin
-
-1. Mở **XAMPP Control Panel** → Start **Apache** + **MySQL**
-2. Vào trình duyệt: http://localhost/phpmyadmin
-3. Nhấn **New** → Tạo database tên `laptop_shop`, chọn **utf8mb4_general_ci**
-4. Chọn database `laptop_shop` vừa tạo
-5. Nhấn tab **Import** → **Chọn file** → chọn file `seed.sql` trong thư mục dự án
-6. Kéo xuống nhấn **Go** (hoặc Import) → đợi import xong
-
-#### Cách 2: Dùng command line (nếu có MySQL CLI)
+### 4. Đồng bộ schema lên database
 
 ```bash
-mysql -u root -p laptop_shop < seed.sql
+npx prisma db push
 ```
 
-### 4. Generate Prisma Client
+Lệnh này sẽ tạo toàn bộ bảng theo `prisma/schema.prisma` trên Supabase.
+
+### 5. Generate Prisma Client
 
 ```bash
 npx prisma generate
 ```
 
-### 5. Chạy dev server
+### 6. Chạy dev server
 
 ```bash
 npm run dev
@@ -102,12 +106,26 @@ Mở trình duyệt: http://localhost:3000 🎉
 
 ---
 
-### tài khoản vn pay 
-Ngân hàng	NCB
-Số thẻ	9704198526191432198
-Tên chủ thẻ	NGUYEN VAN A
-Ngày phát hành	07/15
-Mật khẩu OTP	123456
+### Tài khoản VNPay Sandbox (NCB)
+
+| Thông tin | Giá trị |
+|-----------|---------|
+| Ngân hàng | NCB |
+| Số thẻ | 9704198526191432198 |
+| Tên chủ thẻ | NGUYEN VAN A |
+| Ngày phát hành | 07/15 |
+| Mật khẩu OTP | 123456 |
+
+---
+
+## 🎬 Video demo
+
+Demo mua hàng & thanh toán VNPay:
+
+[![Xem video demo mua hàng & thanh toán VNPay](https://img.youtube.com/vi/s63vhzSamzU/0.jpg)](https://youtu.be/s63vhzSamzU)
+
+---
+
 ## 📁 Cấu trúc thư mục
 
 ```
@@ -140,6 +158,7 @@ laptop-shop/
 | `npm test`                  | Chạy test (Vitest)       |
 | `npx prisma studio`         | Mở Prisma Studio (GUI)   |
 | `npx prisma generate`       | Generate Prisma Client   |
+| `npx prisma db push`        | Đồng bộ schema lên DB    |
 
 ---
 
@@ -148,3 +167,5 @@ laptop-shop/
 - **Chatbot AI:** Cần cung cấp `GOOGLE_GEMINI_API_KEY` trong `.env` để chatbot hoạt động. Lấy key tại https://aistudio.google.com/apikey
 - **VNPay:** Dùng môi trường sandbox. Đăng ký test tại https://sandbox.vnpayment.vn
 - **Email:** Dùng App Password của Gmail (cần bật 2FA). Xem hướng dẫn Google.
+- **Database:** Project dùng **Supabase Cloud** (PostgreSQL). Nếu project Supabase bị **Pause** sau 7 ngày không hoạt động (gói free), vào Dashboard → **Restore project** trước khi dùng.
+- **Migration:** Khi thay đổi model trong `prisma/schema.prisma`, chạy `npx prisma migrate dev --name <tên>` để tạo migration mới, hoặc `npx prisma db push` để đồng bộ nhanh (dev only).
