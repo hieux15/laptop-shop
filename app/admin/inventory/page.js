@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
@@ -58,7 +58,7 @@ function Toast({ toasts, onRemove }) {
   );
 }
 
-export default function AdminInventoryPage() {
+function InventoryContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -597,5 +597,13 @@ export default function AdminInventoryPage() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function AdminInventoryPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><Loader2 size={32} className="animate-spin text-blue-600" /></div>}>
+      <InventoryContent />
+    </Suspense>
   );
 }

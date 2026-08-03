@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
@@ -64,7 +64,7 @@ function Toast({ toasts, onRemove }) {
   );
 }
 
-export default function AdminProductsPage() {
+function ProductsContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -826,5 +826,13 @@ export default function AdminProductsPage() {
         </div>
       )}
     </>
+  );
+}
+
+export default function AdminProductsPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-100"><Loader2 size={32} className="animate-spin text-blue-600" /></div>}>
+      <ProductsContent />
+    </Suspense>
   );
 }
