@@ -4,6 +4,8 @@ Website thương mại điện tử bán laptop chính hãng với đầy đủ 
 
 **Stack:** Next.js 16 (App Router) + React 19 + TailwindCSS 4 + Prisma 6 ORM + PostgreSQL (Supabase Cloud) + NextAuth.js v5
 
+> 🌐 **Demo trực tuyến:** https://laptop-shop-eight.vercel.app/
+
 ---
 
 ## 🔧 Yêu cầu
