@@ -124,7 +124,7 @@ Mở trình duyệt: http://localhost:3000 🎉
 
 Demo mua hàng & thanh toán VNPay:
 
-[![Xem video demo mua hàng & thanh toán VNPay](https://img.youtube.com/vi/s63vhzSamzU/0.jpg)](https://youtu.be/s63vhzSamzU)
+[![Xem video demo mua hàng & thanh toán VNPay](https://img.youtube.com/vi/Q1e5zVRsRMk/0.jpg)](https://youtu.be/Q1e5zVRsRMk)
 
 ---
 
