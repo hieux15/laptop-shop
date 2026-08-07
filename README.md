@@ -62,6 +62,11 @@ VNP_HASHSECRET="your-hash-secret"
 VNP_URL="https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
 VNP_API="https://sandbox.vnpayment.vn/merchant_webapi/api/transaction"
 VNP_RETURNURL="http://localhost:3000/api/vnpay/vnpay-return"
+
+# Supabase Storage (upload ảnh sản phẩm & logo hãng)
+SUPABASE_URL="https://<project-ref>.supabase.co"
+SUPABASE_ANON_KEY="sb_publishable_..."
+SUPABASE_SERVICE_ROLE_KEY="sb_secret_..."
 ```
 
 > **Lưu ý quan trọng:**
@@ -70,6 +75,22 @@ VNP_RETURNURL="http://localhost:3000/api/vnpay/vnpay-return"
 > - Port `5432` = Connection Pooler, dùng trong production để tránh giới hạn kết nối.
 > - Port `6543` = Session pooler, dùng với Prisma khi cần (kiểm tra bảng **Connection strings** trong Dashboard).
 > - **Không commit file `.env` lên Git** — đảm bảo nó nằm trong `.gitignore`.
+
+### 3b. Tạo Supabase Storage Bucket (cho upload ảnh)
+
+Tính năng upload ảnh sản phẩm & logo hãng từ trang admin dùng **Supabase Storage** (vì Vercel không cho ghi file vào filesystem ở runtime).
+
+1. Vào **Supabase Dashboard → Storage → New bucket**
+2. Đặt tên bucket: `images`
+3. Chọn **Public bucket** (để ảnh truy cập trực tiếp qua URL)
+4. Bấm **Create bucket**
+
+Lấy API keys tại **Project Settings → API**:
+- `SUPABASE_URL` = **Project URL** (dạng `https://<project-ref>.supabase.co`)
+- `SUPABASE_ANON_KEY` = **publishable key** (bắt đầu bằng `sb_publishable_...`)
+- `SUPABASE_SERVICE_ROLE_KEY` = **service_role key** (bắt đầu bằng `sb_secret_...`, bấm **Reveal** để hiện)
+
+> ⚠️ **Bảo mật:** `SUPABASE_SERVICE_ROLE_KEY` có toàn quyền trên database — chỉ dùng server-side, **không bao giờ** lộ ra client. Nên đổi lại key này sau khi cấu hình xong (nút **Roll** trong Dashboard).
 
 ### 4. Đồng bộ schema lên database
 

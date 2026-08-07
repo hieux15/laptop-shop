@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
+import { uploadToSupabase } from '@/lib/upload';
 
 export async function POST(request) {
   try {
@@ -29,29 +28,18 @@ export async function POST(request) {
       }, { status: 400 });
     }
 
-    // Tạo tên file duy nhất
+    // Đọc nội dung file
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const originalName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const ext = path.extname(originalName);
-    const baseName = path.basename(originalName, ext);
-    const timestamp = Date.now();
-    const random = Math.random().toString(36).substring(2, 8);
-    const fileName = `brand-${baseName}-${timestamp}-${random}${ext}`;
+    // Upload lên Supabase Storage
+    const result = await uploadToSupabase(buffer, 'brands', file.name, file.type);
 
-    // Đảm bảo thư mục public/brands tồn tại
-    const uploadDir = path.join(process.cwd(), 'public', 'brands');
-    await mkdir(uploadDir, { recursive: true });
+    if (!result.success) {
+      return NextResponse.json({ success: false, error: result.error }, { status: 500 });
+    }
 
-    // Ghi file
-    const filePath = path.join(uploadDir, fileName);
-    await writeFile(filePath, buffer);
-
-    // Trả về đường dẫn tương đối để lưu vào DB
-    const imageUrl = `/brands/${fileName}`;
-
-    return NextResponse.json({ success: true, imageUrl, fileName });
+    return NextResponse.json({ success: true, imageUrl: result.imageUrl, fileName: result.fileName });
   } catch (error) {
     console.error('Upload logo error:', error);
     return NextResponse.json({ success: false, error: 'Lỗi khi upload logo' }, { status: 500 });
