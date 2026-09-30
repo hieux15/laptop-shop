@@ -25,6 +25,7 @@ const PAYMENT_LABELS = {
   COD:           'Thanh toán khi nhận hàng (COD)',
   BANK_TRANSFER: 'Chuyển khoản ngân hàng',
   VNPAY:         'VNPay',
+  VNPAY_MOCK:    'VNPay (mô phỏng)',
 };
 
 export default function OrdersPage() {

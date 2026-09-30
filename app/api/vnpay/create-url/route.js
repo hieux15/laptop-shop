@@ -2,22 +2,45 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import crypto from 'crypto';
 import { sortObject } from '@/lib/vnpay';
+import { auth } from '@/auth';
+import { getPaymentMode, PAYMENT_MODE } from '@/lib/paymentMode';
+import { completeMockPayment } from '@/lib/mockPayment';
 
 export async function POST(request) {
   try {
-    const { orderId } = await request.json();
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ success: false, error: 'Vui lòng đăng nhập' }, { status: 401 });
+    }
 
-    if (!orderId) {
+    const { orderId } = await request.json();
+    const parsedOrderId = Number(orderId);
+
+    if (!Number.isSafeInteger(parsedOrderId) || parsedOrderId <= 0) {
       return NextResponse.json({ success: false, error: 'Thiếu orderId' }, { status: 400 });
     }
 
+    if (getPaymentMode() === PAYMENT_MODE.MOCK) {
+      const result = await completeMockPayment(prisma, Number(session.user.id), parsedOrderId);
+      if (!result.success) {
+        const status = result.reason === 'not_found' ? 404 : 409;
+        return NextResponse.json({ success: false, error: 'Không thể xác nhận thanh toán mô phỏng cho đơn hàng này' }, { status });
+      }
+
+      const paymentUrl = new URL(`/checkout/result?orderId=${parsedOrderId}`, request.url).toString();
+      return NextResponse.json({ success: true, paymentUrl, mocked: true });
+    }
+
     // Lấy thông tin đơn hàng từ DB
-    const order = await prisma.order.findUnique({
-      where: { id: parseInt(orderId) },
+    const order = await prisma.order.findFirst({
+      where: { id: parsedOrderId, userId: Number(session.user.id) },
     });
 
     if (!order) {
       return NextResponse.json({ success: false, error: 'Không tìm thấy đơn hàng' }, { status: 404 });
+    }
+    if (order.paymentMethod !== 'VNPAY') {
+      return NextResponse.json({ success: false, error: 'Đơn hàng không sử dụng VNPay thật' }, { status: 409 });
     }
 
     // Các tham số VNPay

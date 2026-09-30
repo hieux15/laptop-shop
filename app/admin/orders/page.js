@@ -18,6 +18,7 @@ const paymentLabels = {
   COD: 'COD',
   BANK_TRANSFER: 'Bank',
   VNPAY: 'VNPay',
+  VNPAY_MOCK: 'VNPay (mô phỏng)',
 };
 
 const ITEMS_PER_PAGE = 10;

@@ -56,7 +56,10 @@ MAIL_USER="your-email@gmail.com"
 MAIL_PASS="your-app-password"
 MAIL_FROM="noreply@laptoppro.vn"
 
-# VNPay Sandbox
+# Payment mode: mock for local development/demo; use vnpay to test VNPAY Sandbox.
+PAYMENT_MODE="mock"
+
+# VNPay Sandbox (required only when PAYMENT_MODE="vnpay")
 VNP_TMNCODE="your-tmn-code"
 VNP_HASHSECRET="your-hash-secret"
 VNP_URL="https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
@@ -189,6 +192,7 @@ laptop-shop/
 
 - **Chatbot AI:** Cần cung cấp `GOOGLE_GEMINI_API_KEY` trong `.env` để chatbot hoạt động. Lấy key tại https://aistudio.google.com/apikey
 - **VNPay:** Dùng môi trường sandbox. Đăng ký test tại https://sandbox.vnpayment.vn
+- **Thanh toán mô phỏng:** Mặc định local dùng `PAYMENT_MODE=mock`. Đơn VNPay mô phỏng được tự đánh dấu đã thanh toán và hiển thị rõ là mô phỏng. Để kiểm thử cổng thật, đặt `PAYMENT_MODE=vnpay` cùng thông tin Sandbox. Website demo Vercel cũng cần đặt `PAYMENT_MODE=mock` trong Project Settings → Environment Variables rồi redeploy; môi trường deploy mặc định là VNPay.
 - **Email:** Dùng App Password của Gmail (cần bật 2FA). Xem hướng dẫn Google.
 - **Database:** Project dùng **Supabase Cloud** (PostgreSQL). Nếu project Supabase bị **Pause** sau 7 ngày không hoạt động (gói free), vào Dashboard → **Restore project** trước khi dùng.
 - **Migration:** Khi thay đổi model trong `prisma/schema.prisma`, chạy `npx prisma migrate dev --name <tên>` để tạo migration mới, hoặc `npx prisma db push` để đồng bộ nhanh (dev only).

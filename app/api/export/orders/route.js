@@ -15,6 +15,7 @@ const paymentLabel = {
   COD: 'COD',
   BANK_TRANSFER: 'Chuyển khoản',
   VNPAY: 'VNPay',
+  VNPAY_MOCK: 'VNPay (mô phỏng)',
 };
 
 export async function POST(request) {

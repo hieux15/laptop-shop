@@ -138,7 +138,7 @@ function CheckoutResultContent() {
             <p className="text-sm text-gray-500 mb-1 mt-3">Trạng thái thanh toán:</p>
             <p className={`font-semibold ${order.isPaid ? 'text-green-600' : isFailed ? 'text-red-600' : 'text-yellow-600'}`}>
               {order.isPaid
-                ? `Đã thanh toán${order.paymentMethod === 'VNPAY' ? ' (VNPay)' : order.paymentMethod === 'BANK_TRANSFER' ? ' (Chuyển khoản)' : ''}`
+                ? `Đã thanh toán${order.paymentMethod === 'VNPAY_MOCK' ? ' (VNPay mô phỏng)' : order.paymentMethod === 'VNPAY' ? ' (VNPay)' : order.paymentMethod === 'BANK_TRANSFER' ? ' (Chuyển khoản)' : ''}`
                 : order.paymentMethod === 'VNPAY' && isFailed
                   ? 'Thanh toán thất bại'
                   : order.paymentMethod === 'BANK_TRANSFER'

@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { computeOrderTotal, computeShipping } from "@/lib/orderPricing";
 import { resolveVoucherForOrder } from "./voucher";
 import { sendOrderConfirmationEmail } from "./orderEmails";
+import { getPaymentMode, PAYMENT_MODE } from '@/lib/paymentMode';
 
 export async function createOrderAction(orderData) {
   const session = await auth();
@@ -15,6 +16,10 @@ export async function createOrderAction(orderData) {
 
   try {
     const { receiverName, receiverPhone, street, city, province, paymentMethod, note, items, voucherCode } = orderData;
+
+    if (!['COD', 'BANK_TRANSFER', 'VNPAY'].includes(paymentMethod)) {
+      return { success: false, error: 'Phương thức thanh toán không hợp lệ' };
+    }
 
     const productIds = items.map(i => i.id);
 
@@ -80,7 +85,9 @@ export async function createOrderAction(orderData) {
           street,
           city,
           province,
-          paymentMethod,
+          paymentMethod: paymentMethod === 'VNPAY' && getPaymentMode() === PAYMENT_MODE.MOCK
+            ? 'VNPAY_MOCK'
+            : paymentMethod,
           note: note || null,
           total,
           voucherId: appliedVoucher?.id ?? null,
