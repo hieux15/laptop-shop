@@ -6,6 +6,12 @@ Website thương mại điện tử bán laptop chính hãng với đầy đủ 
 
 > 🌐 **Demo trực tuyến:** https://laptop-shop-eight.vercel.app/
 
+## 🎬 Demo thanh toán VNPay
+
+[![Xem video demo mua hàng & thanh toán VNPay](https://img.youtube.com/vi/Q1e5zVRsRMk/0.jpg)](https://youtu.be/Q1e5zVRsRMk)
+
+> **Ghi chú:** Video minh họa luồng tích hợp VNPay Sandbox. Website demo hiện dùng thanh toán mô phỏng (`PAYMENT_MODE=mock`) vì thông tin Sandbox có thể bị VNPAY thu hồi định kỳ; đơn mô phỏng được đánh dấu rõ trong hệ thống và không phát sinh giao dịch thật. Có thể bật lại VNPay Sandbox bằng `PAYMENT_MODE=vnpay` cùng bộ thông tin merchant còn hiệu lực.
+
 ---
 
 ## 🔧 Yêu cầu
@@ -143,12 +149,6 @@ Mở trình duyệt: http://localhost:3000 🎉
 | Mật khẩu OTP | 123456 |
 
 ---
-
-## 🎬 Video demo
-
-Demo mua hàng & thanh toán VNPay:
-
-[![Xem video demo mua hàng & thanh toán VNPay](https://img.youtube.com/vi/Q1e5zVRsRMk/0.jpg)](https://youtu.be/Q1e5zVRsRMk)
 
 ---
 

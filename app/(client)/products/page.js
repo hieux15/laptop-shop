@@ -120,25 +120,26 @@ function ProductsPageContent() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [productsRes, categoriesRes, brandsRes] = await Promise.all([
-          fetch('/api/products'),
+        const productsRes = await fetch('/api/products');
+        if (!productsRes.ok) throw new Error('Không tải được sản phẩm');
+        const productsData = await productsRes.json();
+        setProducts(Array.isArray(productsData) ? productsData : []);
+        setIsLoaded(true);
+
+        // Filter metadata is not needed to render products, so load it in the background.
+        const [categoriesRes, brandsRes] = await Promise.all([
           fetch('/api/categories'),
           fetch('/api/brands')
         ]);
-        
-        const productsData = await productsRes.json();
-        const categoriesData = await categoriesRes.json();
-        const brandsData = await brandsRes.json();
-        
-        setProducts(Array.isArray(productsData) ? productsData : []);
+        const [categoriesData, brandsData] = await Promise.all([
+          categoriesRes.json(),
+          brandsRes.json()
+        ]);
         setCategories(Array.isArray(categoriesData) ? categoriesData : []);
         setBrands(Array.isArray(brandsData) ? brandsData : []);
       } catch (e) {
         console.error('Failed to fetch data:', e);
-        setProducts([]);
-        setCategories([]);
-        setBrands([]);
-      } finally {
+        setProducts(prev => prev.length ? prev : []);
         setIsLoaded(true);
       }
     }

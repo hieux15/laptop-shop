@@ -42,7 +42,14 @@ export default function ProductDetailPage({ params: paramsPromise }) {
         }
         const data = await res.json();
         setProduct(data.product);
-        setRelatedProducts(data.relatedProducts || []);
+        setIsLoaded(true);
+
+        fetch(`/api/products/${params.id}/related`)
+          .then(relatedRes => relatedRes.ok ? relatedRes.json() : null)
+          .then(relatedData => {
+            if (relatedData) setRelatedProducts(relatedData.relatedProducts || []);
+          })
+          .catch(error => console.error('Failed to fetch related products:', error));
       } catch (e) {
         console.error('Failed to fetch product:', e);
         setProduct(null);
@@ -104,6 +111,7 @@ export default function ProductDetailPage({ params: paramsPromise }) {
                   fill
                   className="object-contain scale-100 p-2 sm:p-4"
                   priority
+                  sizes="(max-width: 1024px) 100vw, 58vw"
                 />
               </div>
             </div>

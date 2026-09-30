@@ -23,6 +23,7 @@ export function ProductCard({ product }) {
             alt={product.name}
             width={300}
             height={200}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 300px"
             className="object-contain max-h-full max-w-full group-hover:scale-105 transition-transform duration-500"
           />
           {/* Badges */}

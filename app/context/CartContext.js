@@ -90,14 +90,24 @@ export function CartProvider({ children }) {
       return [...prev, { ...product, quantity }];
     });
 
-    if (status === 'authenticated') {
-      await addToCartAction(product.id, quantity);
-    }
+    toast.success(existingItem
+      ? `Đã cập nhật "${product.name}" (${existingItem.quantity + quantity} sản phẩm)`
+      : `Đã thêm "${product.name}" vào giỏ hàng`);
 
-    if (existingItem) {
-      toast.success(`Đã cập nhật "${product.name}" (${existingItem.quantity + quantity} sản phẩm)`);
-    } else {
-      toast.success(`Đã thêm "${product.name}" vào giỏ hàng`);
+    if (status === 'authenticated') {
+      try {
+        const result = await addToCartAction(product.id, quantity);
+        if (result?.success) return;
+      } catch (error) {
+        console.error('Error syncing cart:', error);
+      }
+
+      setCartItems(prev => prev.flatMap(item => {
+        if (item.id !== product.id) return [item];
+        const nextQuantity = item.quantity - quantity;
+        return nextQuantity > 0 ? [{ ...item, quantity: nextQuantity }] : [];
+      }));
+      toast.error('Không thể lưu sản phẩm vào giỏ hàng. Vui lòng thử lại.');
     }
   };
 
